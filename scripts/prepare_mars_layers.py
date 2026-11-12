@@ -71,8 +71,9 @@ def terrain_derivatives(dem_path: Path, outdir: Path):
         py = abs(ds.transform.e)
         dz_dy, dz_dx = np.gradient(z, py, px)
         slope = np.degrees(np.arctan(np.hypot(dz_dx, dz_dy)))
-        # Array rows increase southward, so negate dz_dy to form the northward axis.
-        aspect = (np.degrees(np.arctan2(-dz_dx, -dz_dy)) + 360) % 360
+        # dz_dy is measured down the raster (southward); report downhill bearing
+        # clockwise from north: 0=N, 90=E, 180=S, 270=W.
+        aspect = (np.degrees(np.arctan2(-dz_dx, dz_dy)) + 360) % 360
         aspect[np.isnan(z)] = np.nan
         prof = ds.profile.copy()
         prof.update(dtype="float32", compress="deflate", predictor=3, tiled=True,
@@ -80,6 +81,23 @@ def terrain_derivatives(dem_path: Path, outdir: Path):
         for name, arr in (("slope_deg", slope), ("aspect_deg", aspect)):
             with rasterio.open(outdir / f"{name}.tif", "w", **prof) as dst:
                 dst.write(arr.astype("float32"), 1)
+
+
+def clip_shelter_geojson(src_path: Path, dst_path: Path):
+    """Keep point candidates inside the project footprint; convert 0–360E longitudes."""
+    data = json.loads(src_path.read_text())
+    kept = []
+    for feature in data.get("features", []):
+        geom = feature.get("geometry") or {}
+        if geom.get("type") != "Point":
+            continue
+        lon, lat = geom["coordinates"][:2]
+        if lon > 180:
+            lon -= 360
+        if WEST <= lon <= EAST and SOUTH <= lat <= NORTH:
+            feature["geometry"]["coordinates"][0] = lon
+            kept.append(feature)
+    dst_path.write_text(json.dumps({"type": "FeatureCollection", "features": kept}, indent=2) + "\n")
 
 
 def main():
@@ -101,11 +119,10 @@ def main():
     if args.ice:
         warp(args.ice, args.out / "ice_consistency.tif", crs, transform, width, height)
     if args.thermal:
-        warp(args.thermal, args.out / "surface_temperature_k.tif", crs, transform,
+        warp(args.thermal, args.out / "thermal_input.tif", crs, transform,
              width, height)
     if args.shelters:
-        # Keep source coordinates intact and provide the target grid metadata alongside.
-        (args.out / "shelter_candidates.geojson").write_bytes(args.shelters.read_bytes())
+        clip_shelter_geojson(args.shelters, args.out / "shelter_candidates.geojson")
     metadata = {
         "region": "Arcadia Planitia", "bbox_lonlat_east_positive": [WEST, SOUTH, EAST, NORTH],
         "grid_crs": crs, "pixel_size_m": args.pixel_m, "width": width, "height": height,
