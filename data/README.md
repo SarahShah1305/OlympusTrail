@@ -101,10 +101,65 @@ CRS, transform, dimensions, and nodata convention. Continuous rasters use
 bilinear resampling; discrete data use nearest-neighbor. The script deliberately
 does not synthesize missing ice, temperature, or shelter observations.
 
-## Download manifest to complete
+## Arcadia processing handoff (2026-11-13)
 
-Keep source files out of version control if they are large. For each downloaded
-product, record the actual product name/version, source URL, access date, native
-projection, native pixel spacing, units, processing level, and any masking or
-conversion performed. The source layers are required before producing the final
-processed grid; no generated rasters are checked in yet.
+The supplied files were processed into `data/processed/` on a shared 3 km grid.
+Three kilometres preserves the effective spacing of the SWIM input; the finer
+MOLA and THEMIS measurements are resampled to that grid and do not make the ice
+layer finer. `grid.json` records the shared CRS, footprint, source raster
+metadata, and input filenames.
+
+| Output | Result | Interpretation / limitation |
+|---|---|---|
+| `elevation_m.tif` | MOLA elevations, −4,763 to −3,354 m in this footprint | MOLA-derived elevation, metres; global MOLA source cropped/reprojected to Arcadia. |
+| `slope_deg.tif` | Derived slope, 0.0002–10.56° | Gradient from aligned MOLA elevation at 3 km spacing; regional terrain only. |
+| `aspect_deg.tif` | Derived aspect, 0–360° | Downhill bearing clockwise from north. Flat-cell bearings are mathematically unstable and should not be interpreted. |
+| `ice_consistency.tif` | SWIM consistency index, approximately 0.29–0.98 in valid footprint | SWIM Combined Ice Consistency Map (0–1 m); consistency indicator, not ice depth or a calibrated probability. |
+| `thermal_brightness_temperature_k.tif` | THEMIS PBT I01710002, I01922032, I02546006, Kelvin; valid over about 5.7% of the grid | Three observations fill some additional areas, but most of the region remains nodata. No values are interpolated into the gaps. This is not a region-wide thermal layer. |
+| `cave_candidates.geojson` | 0 candidates | The supplied USGS/PDS catalog has no candidate points in this Arcadia window. Do not display this as confirmed shelter coverage. |
+
+### Sources and processing
+
+- **Elevation:** NASA Mars Trek `mola128_mola64_merge_90Nto90S_SimpleC_clon0.tif`, global MOLA/MOLA64 merged DEM. Source has 46,081 × 23,041 pixels and approximately 1/128° cell spacing. The source file is global (2 GB); it remains outside the repository. NASA Mars Trek: <https://trek.nasa.gov/mars/>; PDS Geosciences MOLA archive: <https://pds-geosciences.wustl.edu/missions/mgs/mola.html>.
+- **Ice:** SWIM `SWIM4MIM_Ci_0_1.tif`, 7,200 × 2,400 cells, about 2,964 m native pixel spacing, nodata −30. NASA-sponsored SWIM product: <https://swim.psi.edu/SWIM4MIMProducts.php>. Source mosaic is global in longitude and spans ±60° latitude; it covers this region.
+- **Thermal:** THEMIS IR PBT `I01710002PBT.IMG`, `I01922032PBT.IMG`, and `I02546006PBT.IMG`. They are projected brightness temperatures from 2002-05-04, 2002-05-21, and 2002-07-12. The first two are 100 m floating-point PDS images; the third is a legacy unsigned-byte PDS image with 100 m map scale. For the legacy product, its embedded label's `OFFSET=177.285`, `SCALING_FACTOR=0.027486`, sinusoidal center longitude 198°E, and line/sample projection offsets were applied to recover Kelvin and georeference it. All three labels specify `NULL_CONSTANT=0`; zero pixels were masked. The resulting mosaic prioritizes earlier files and fills only nodata gaps, without averaging observations taken at different times. PBT is projected brightness temperature, not a complete regional climatology. NASA PDS product archive: <https://pds.nasa.gov/>; THEMIS archive: <https://themis-data.mars.asu.edu/>.
+- **Cave candidates:** Mars Global Cave Candidate Catalog, PDS product `urn:nasa:pds:mars_mro.odyssey_multi_cavecatalog_cushing_2016`. Filtered `Mars_Cave_Catalog_shapefile.csv`, converting 0–360°E longitudes to signed longitude before clipping. The primary `Mars_Cave_Catalog.csv` supplied alongside it has inconsistent header/row field order, so the companion CSV with explicit longitude/latitude columns was used. These are image-derived candidate entrances, not verified shelters. Catalog landing page: <https://astrogeology.usgs.gov/search/map/mars_global_cave_candidate_catalog_v1_cushing>.
+
+The shared analysis window is 40–52°N, 173–157°W. Continuous layers were bilinearly reprojected; the cave points were spatially filtered. THEMIS source null value 0 and the floating-point nodata sentinel were masked according to the PDS labels/GDAL metadata. Slope and aspect were derived from the MOLA output. The script is reproducible with:
+
+```sh
+python scripts/prepare_mars_layers.py \
+  --dem /path/to/mola128_mola64_merge_90Nto90S_SimpleC_clon0.tif \
+  --ice /path/to/SWIM4MIM_Ci_0_1.tif \
+  --thermal /path/to/I01710002PBT.IMG \
+  --thermal /path/to/I01922032PBT.IMG \
+  --thermal /path/to/I02546006PBT.IMG \
+  --shelters /path/to/Mars_Cave_Catalog_shapefile.csv \
+  --out data/processed --pixel-m 3000
+```
+
+### Download status and required handoff
+
+The elevation, slope, aspect, ice, and cave-catalog work is complete from the
+files supplied. Three numerical THEMIS PBT scenes were processed, but **the
+regional thermal layer is incomplete**: only about 5.7% of the 3 km Arcadia
+grid has a PBT value. The requested controlled-mosaic GeoTIFF
+`THEMIS_NightIR_ControlledMosaic_Diacria_30N180E_100mpp.tif` was not downloaded.
+The available `download-2` file is only its small PDS label, the `.txt` files
+are source-image lists, and the `.jpg` files are browse previews; none contains
+the mosaic's numeric raster pixels. Do not use the preview JPEGs as calibrated
+temperatures. This failed/absent raster is the specific missing data item.
+
+**Person 1 handoff:** use the provided `thermal_brightness_temperature_k.tif`
+as a partial layer and handle its nodata mask in the Terrain Cost Grid. Do not
+assign fabricated thermal values to the remaining cells. If the route/site
+scoring requires region-wide thermal coverage, obtain more THEMIS PBT scenes or
+the controlled-mosaic GeoTIFF and rerun the preparation script before treating
+thermal risk as spatially complete. The 3-scene PBT mosaic combines different
+observation dates/local times and is not a forecast.
+
+The cave-candidate catalog was successfully filtered and contains zero points
+inside this Arcadia window. Report shelter candidates as unavailable here; do
+not infer shelter coverage from the empty GeoJSON. Dust, radiation, and sunlight
+were not in Person 2's downloaded inputs and remain for the other assigned
+layers/roles to supply.
