@@ -1,0 +1,4 @@
+# Keep raw source exports byte-for-byte for provenance hashes.
+sources/* binary
+sources/** binary
+*.tif binary

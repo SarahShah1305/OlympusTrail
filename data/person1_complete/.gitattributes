@@ -1,0 +1,4 @@
+# Preserve source exports, attached PDS headers and raster hashes exactly.
+sources/*.txt -text -diff
+sources/*.bin binary
+*.tif binary

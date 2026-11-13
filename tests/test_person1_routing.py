@@ -28,6 +28,41 @@ def request(**kwargs):
     return RouteRequest(**(base | kwargs))
 
 
+@pytest.mark.parametrize("minimum", [None, 0.0, 1.0])
+def test_ice_at_start_uses_excursion_default_but_honors_explicit_distance(minimum):
+    terrain = grid((3, 5))
+    payload = dict(start=dict(row=1,col=0), goal_type="ice")
+    if minimum is not None:
+        payload["min_goal_distance_km"] = minimum
+    original = RouteRequest(**payload)
+    result = plan_route(terrain, original)
+    assert result["status"] == "ok"
+    destination = result["route"]["destination"]
+    distance = terrain.distance_m((1,0), (destination["row"],destination["col"]))
+    if minimum == 0:
+        assert distance == 0
+    else:
+        assert distance >= (2 if minimum is None else minimum)*1000
+    assert original.min_goal_distance_km == (0 if minimum is None else minimum)
+
+
+def test_ice_excursion_cannot_succeed_at_start_when_budget_is_too_small():
+    terrain = grid((3, 5))
+    result = plan_route(terrain, RouteRequest(start=dict(row=1,col=0), goal_type="ice", oxygen_hours=.01))
+    assert result["status"] == "infeasible"
+    assert result["route"] is None
+
+
+def test_ice_default_keeps_a_nearby_goal_when_start_does_not_meet_threshold():
+    terrain = grid((3, 3))
+    terrain.layers["ice"][:] = 0
+    terrain.layers["ice"][1,1] = 1
+    result = plan_route(terrain, RouteRequest(start=dict(row=1,col=0), goal_type="ice"))
+    assert result["status"] == "ok"
+    assert result["route"]["destination"]["col"] == 1
+    assert result["request"]["min_goal_distance_km"] == 0
+
+
 def test_round_trip_reserves_both_legs_and_profile_reconciles():
     terrain = grid()
     planned = plan_route(terrain, request())

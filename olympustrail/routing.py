@@ -95,12 +95,66 @@ def route_profile(grid, request, environment, path):
                         radiation_reference_msv=radiation if environment["radiation"] is not None else None)
 
 
+def checkpoints(profile, outbound_len, request, fractions=(0.25, 0.5, 0.75, 1.0)):
+    """Abort checkpoints on the outbound leg.
+
+    The return reverses the outbound path, so walking back from outbound
+    step i costs exactly the time/energy already spent to reach it. The
+    margin is what would be left at the start if the crew turned back there.
+    """
+    outbound = profile[:outbound_len]
+    if len(outbound) < 2:
+        return []
+    total = outbound[-1]["elapsed_hours"]
+    picked, seen = [], set()
+    for fraction in fractions:
+        target = total * fraction
+        index = next(i for i, p in enumerate(outbound) if p["elapsed_hours"] >= target - 1e-9)
+        if index in seen or index == 0:
+            continue
+        seen.add(index)
+        p = outbound[index]
+        hours_back = p["elapsed_hours"]
+        energy_used = request.battery_wh - p["battery_remaining_wh"]
+        picked.append(dict(
+            fraction_of_outbound=fraction, position=p["position"], elapsed_hours=p["elapsed_hours"],
+            distance_km=p["distance_km"], hours_to_return=hours_back,
+            oxygen_left_if_abort_hours=request.oxygen_hours - 2*hours_back,
+            battery_left_if_abort_wh=request.battery_wh - 2*energy_used,
+        ))
+    return picked
+
+
+def shelters_near(grid, path, max_km=3.0, limit=3):
+    """Terrain shelter candidates within max_km of any route cell."""
+    found = []
+    for feature in grid.metadata.get("shelters", []):
+        props = feature["properties"]
+        cell = (props["row"], props["col"])
+        nearest = min(path, key=lambda c: (c[0]-cell[0])**2 + (c[1]-cell[1])**2)
+        d = grid.distance_m(nearest, cell) / 1000
+        if d <= max_km:
+            found.append(dict(position=grid.position(cell), distance_from_route_km=d,
+                              nearest_route_point=grid.position(nearest),
+                              sky_blocked_fraction=props["sky_blocked_fraction"], kind=props["kind"],
+                              verified_shelter=False, radiation_protection_validated=False,
+                              note="Terrain wall that hides part of the sky; not a cave or verified shelter."))
+    return sorted(found, key=lambda f: f["distance_from_route_km"])[:limit]
+
+
 def plan_route(grid: TerrainGrid, request: RouteRequest):
     costs, environment, used_weights = grid.risk_grid(request)
     valid = np.isfinite(costs)
     start = grid.cell(request.start)
     if not valid[start]:
         raise ValueError("Start is blocked by missing data, slope limit, or an avoid constraint")
+    if (request.goal_type == "ice" and
+            "min_goal_distance_km" not in request.model_fields_set and
+            np.isfinite(grid.layers["ice"][start]) and
+            grid.layers["ice"][start] >= request.ice_min_consistency):
+        # An omitted distance should produce an excursion from an icy base.
+        # Preserve explicit distances, including an intentional zero.
+        request = request.model_copy(update={"min_goal_distance_km": 2.0})
     goal = grid.cell(request.goal) if request.goal is not None else None
     if goal is not None:
         goals = np.zeros(grid.shape, dtype=bool)
@@ -109,15 +163,13 @@ def plan_route(grid: TerrainGrid, request: RouteRequest):
         goals = np.isfinite(grid.layers["ice"]) & (grid.layers["ice"] >= request.ice_min_consistency)
         if request.min_goal_distance_km > 0:
             # Use the same spherical distances as budget calculations.
-            for row, col in np.argwhere(goals):
-                if grid.distance_m(start, (row, col)) < request.min_goal_distance_km*1000:
-                    goals[row, col] = False
+            goals &= grid.distances_from(start) >= request.min_goal_distance_km*1000
     goals &= valid
     factor = 2 if request.return_to_start else 1
     max_hours = request.oxygen_hours*(1-request.reserve_fraction)/factor
     max_energy = request.battery_wh*(1-request.reserve_fraction)/factor
     common = dict(
-        request=request.model_dump(), data=grid.disclosure(request.mode), risk_weights=used_weights,
+        request=request.model_dump(), data=grid.disclosure(request.mode, request.local_time_h), risk_weights=used_weights,
         budget=dict(oxygen_hours=request.oxygen_hours, battery_wh=request.battery_wh,
                     reserve_fraction=request.reserve_fraction, return_to_start=request.return_to_start),
         algorithm="multi-label resource-constrained A*" if goal is not None else
@@ -208,6 +260,8 @@ def plan_route(grid: TerrainGrid, request: RouteRequest):
     traversed_slopes += [math.degrees(math.atan(abs(grid.layers["elevation"][b]-grid.layers["elevation"][a]) /
                                                grid.distance_m(a, b)))
                          for a, b in zip(mission_path, mission_path[1:])]
+    abort_points = checkpoints(profile, len(outbound), request) if request.return_to_start else []
+    shelters = shelters_near(grid, mission_path)
     return dict(**common, status="ok", reason=None,
                 route=dict(outbound=[grid.position(cell) for cell in outbound],
                            return_path=[grid.position(cell) for cell in return_cells],
@@ -223,6 +277,7 @@ def plan_route(grid: TerrainGrid, request: RouteRequest):
                 turn_back=dict(action="reverse_outbound_path" if request.return_to_start else "return_not_budgeted",
                                return_is_reserved=request.return_to_start,
                                turnaround=grid.position(destination),
-                               candidate_shelters=[],
+                               candidate_shelters=shelters,
+                               abort_points=abort_points,
                                oxygen_reserve_hours=request.oxygen_hours*request.reserve_fraction,
                                battery_reserve_wh=request.battery_wh*request.reserve_fraction))

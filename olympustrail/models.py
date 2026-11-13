@@ -55,12 +55,16 @@ class RouteRequest(StrictModel):
     goal: Position | None = None
     goal_type: Literal["ice"] | None = None
     ice_min_consistency: float = Field(default=0.75, ge=-1, le=1)
-    min_goal_distance_km: float = Field(default=0.0, ge=0, le=1000)
+    min_goal_distance_km: float = Field(
+        default=0.0, ge=0, le=1000,
+        description="Minimum distance to an ice goal; omitted uses 2 km when the start already meets the ice threshold. Explicit 0 allows the start.")
     oxygen_hours: float = Field(default=4.0, gt=0, le=1000)
     battery_wh: float = Field(default=1000.0, gt=0, le=1e7)
     reserve_fraction: float = Field(default=0.2, ge=0, lt=1)
     return_to_start: bool = True
     mode: Literal["scenario", "observations"] = "scenario"
+    local_time_h: Literal[0, 6, 12, 18] = Field(
+        default=12, description="Local solar time of the EVA for scenario temperature/sunlight (h)")
     avoid: list[Literal["steep", "dust", "cold", "unknown_thermal"]] = Field(default_factory=list)
     weights: RiskWeights = Field(default_factory=RiskWeights)
     parameters: MissionParameters = Field(default_factory=MissionParameters)
@@ -78,3 +82,7 @@ class SiteRequest(StrictModel):
     min_separation_km: float = Field(default=15.0, ge=0, le=500)
     max_slope_deg: float = Field(default=10.0, gt=0, le=45)
     mode: Literal["scenario", "observations"] = "scenario"
+    edge_buffer_km: float = Field(default=5.0, ge=0, le=100,
+                                  description="Ignore cells this close to the map edge")
+    shelter_reach_km: float = Field(default=5.0, ge=0, le=50,
+                                    description="Reserved compatibility field; unvalidated shielding is excluded from site scores")

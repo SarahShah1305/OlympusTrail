@@ -58,15 +58,18 @@ def create_app(grid: TerrainGrid | None = None) -> FastAPI:
     @app.get("/health")
     def health():
         current = terrain()
-        return dict(status="ok", region="Arcadia Planitia", grid_shape=list(current.shape),
-                    scenario="mcd62_ls90_noon", mission_parameters_validated=False)
+        return dict(status="ok", region=current.metadata.get("region", "Arcadia Planitia"),
+                    dataset=current.metadata.get("dataset"), grid_shape=list(current.shape),
+                    grid_spacing_m=current.pixel_m,
+                    scenario="mcd62_ls90" if current.metadata.get("dataset") == "arcadia_500m" else "mcd62_ls90_noon",
+                    mission_parameters_validated=False)
 
     @app.get("/data-status")
     def data_status():
         current = terrain()
         return dict(
             observations=current.disclosure("observations"), scenario=current.disclosure("scenario"),
-            supplemental=current.metadata.get("supplemental", {}),
+            supplemental=current.metadata.get("manifest", current.metadata.get("supplemental", {})),
             coverage={key: float(np.isfinite(values).mean()) for key, values in current.layers.items()},
         )
 
@@ -74,9 +77,20 @@ def create_app(grid: TerrainGrid | None = None) -> FastAPI:
     def get_sites(limit: int = Query(5, ge=1, le=20),
                   min_separation_km: float = Query(15, ge=0, le=500),
                   max_slope_deg: float = Query(10, gt=0, le=45),
-                  mode: str = Query("scenario", pattern="^(scenario|observations)$")):
+                  mode: str = Query("scenario", pattern="^(scenario|observations)$"),
+                  edge_buffer_km: float = Query(5, ge=0, le=100),
+                  shelter_reach_km: float = Query(5, ge=0, le=50)):
         return terrain().sites(SiteRequest(limit=limit, min_separation_km=min_separation_km,
-                                          max_slope_deg=max_slope_deg, mode=mode))
+                                          max_slope_deg=max_slope_deg, mode=mode,
+                                          edge_buffer_km=edge_buffer_km, shelter_reach_km=shelter_reach_km))
+
+    @app.get("/shelters")
+    def shelters():
+        current = terrain()
+        return dict(type="FeatureCollection", features=current.metadata.get("shelters", []),
+                    kind="unverified_terrain_obstruction_candidate",
+                    verified_shelter_count=0, radiation_protection_validated=False,
+                    cave_candidate_count=current.metadata.get("manifest", {}).get("caves", {}).get("count_40_58N", 0))
 
     @app.post("/sites")
     def post_sites(request: SiteRequest):
@@ -103,27 +117,39 @@ def create_app(grid: TerrainGrid | None = None) -> FastAPI:
                           dust_optical_depth=result["metrics"]["maximum_dust_optical_depth"],
                           radiation_reference_msv=result["metrics"]["radiation_reference_msv"])
                      if result["metrics"] is not None else None),
-            shelter_candidates=[],
+            shelter_candidates=(result["turn_back"] or {}).get("candidate_shelters", []),
+            abort_points=(result["turn_back"] or {}).get("abort_points", []),
+            local_time_h=result["request"]["local_time_h"],
             citations=terrain().metadata.get("supplemental", {}).get("citations", []) + [
                 "https://pds-geosciences.wustl.edu/missions/mgs/mola.html",
+                "https://pds-geosciences.wustl.edu/mgs/mgs-m-mola-5-megdr-l3-v1/mgsl_300x/meg128/",
                 "https://swim.psi.edu/SWIM4MIMProducts.php",
+                "https://www-mars.lmd.jussieu.fr/mcd_python/",
+                "Guo et al. 2017, JGR Planets 122:329-341, doi:10.1002/2016JE005206",
+                "https://themis-data.mars.asu.edu/",
                 "https://pds.nasa.gov/",
+                "https://www.nasa.gov/news-release/nasa-rover-results-include-first-age-measurement-on-mars-and-help-for-human-exploration/",
+                "https://astrogeology.usgs.gov/search/map/mars_global_cave_candidate_catalog_v1_cushing",
             ],
             request=result["request"],
         )
 
     @app.get("/terrain")
-    def terrain_costs(stride: int = Query(5, ge=1, le=50),
-                      mode: str = Query("scenario", pattern="^(scenario|observations)$")):
+    def terrain_costs(stride: int = Query(20, ge=1, le=100),
+                      mode: str = Query("scenario", pattern="^(scenario|observations)$"),
+                      local_time_h: int = Query(12)):
+        if local_time_h not in (0, 6, 12, 18):
+            raise HTTPException(status_code=422, detail="local_time_h must be 0, 6, 12 or 18")
         current = terrain()
-        request = RouteRequest(start=dict(row=0, col=0), goal=dict(row=0, col=0), mode=mode)
+        request = RouteRequest(start=dict(row=0, col=0), goal=dict(row=0, col=0), mode=mode,
+                               local_time_h=local_time_h)
         costs, _, weights = current.risk_grid(request)
         sample = costs[::stride, ::stride]
         return dict(shape=list(current.shape), stride=stride,
                     rows=list(range(0, current.shape[0], stride)), cols=list(range(0, current.shape[1], stride)),
                     cost=[[float(value) if np.isfinite(value) else None for value in row] for row in sample],
                     crs=current.crs.to_string(), transform=list(current.transform)[:6],
-                    risk_weights=weights, data=current.disclosure(mode))
+                    risk_weights=weights, data=current.disclosure(mode, local_time_h))
 
     return app
 

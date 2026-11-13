@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "retrieved_utc": "2026-11-13T15:47:07+00:00",
+  "catalog_title": "Mars Global Cave Candidate Catalog v1 (Cushing)",
+  "pds_collection_id": "urn:nasa:pds:mars_mro.odyssey_multi_cavecatalog_cushing_2016",
+  "source_urls": {
+    "usgs_landing_page": "https://astrogeology.usgs.gov/search/map/mars_global_cave_candidate_catalog_v1_cushing",
+    "official_download_link_from_landing_page": "https://astrogeology.usgs.gov/ckan/dataset/c2960f77-ee20-4cc6-ac85-abbecc0fc7f6/resource/ccd54fb2-9a50-46bf-8971-80c241bb2f40/download/mars_cave_catalog.zip",
+    "legacy_astropedia_link_listed_in_landing_metadata": "http://astropedia.astrogeology.usgs.gov/download/Mars/MarsCaveCatalog/mars_cave_catalog.zip",
+    "zip_member": "miscellaneous/Mars_Cave_Catalog_shapefile.csv",
+    "local_landing_page_snapshot": "work/downloads/caves/usgs-catalog-landing.html",
+    "attempted_legacy_https_url": "https://astropedia.astrogeology.usgs.gov/download/Mars/MarsCaveCatalog/mars_cave_catalog.zip"
+  },
+  "download_note": "The HTTPS form of the legacy Astropedia URL timed out in this environment. The USGS landing page lists the current CKAN Product Download link above; that official link returned the ZIP successfully.",
+  "hashes": [
+    {
+      "path": "work/downloads/caves/mars_cave_catalog.zip",
+      "source_url": "https://astrogeology.usgs.gov/ckan/dataset/c2960f77-ee20-4cc6-ac85-abbecc0fc7f6/resource/ccd54fb2-9a50-46bf-8971-80c241bb2f40/download/mars_cave_catalog.zip",
+      "bytes": 1770313,
+      "sha256": "d2703c128b29f47d44bd482344887156bae82831a636844d1418d75661726097",
+      "role": "Official catalog ZIP downloaded from USGS landing-page Product Download link."
+    },
+    {
+      "path": "work/downloads/caves/Mars_Cave_Catalog_shapefile.csv",
+      "source_url": "https://astrogeology.usgs.gov/ckan/dataset/c2960f77-ee20-4cc6-ac85-abbecc0fc7f6/resource/ccd54fb2-9a50-46bf-8971-80c241bb2f40/download/mars_cave_catalog.zip#miscellaneous/Mars_Cave_Catalog_shapefile.csv",
+      "bytes": 72113,
+      "sha256": "8361b3ed55fd26146eaf9af52636158793491b9dc0b905dbb6c31c09d00a9a16",
+      "role": "Exact companion CSV member extracted from the official ZIP."
+    },
+    {
+      "path": "work/downloads/caves/usgs-catalog-landing.html",
+      "source_url": "https://astrogeology.usgs.gov/search/map/mars_global_cave_candidate_catalog_v1_cushing",
+      "bytes": 24560,
+      "sha256": "565eb881e0b23661e858c1debb9f2b941e4334548f3c8df1e9f8362baddf1c4e",
+      "role": "USGS landing page snapshot confirming the official catalog download link."
+    }
+  ],
+  "zip_contents": {
+    "entry_count": 18,
+    "candidate_csv_members": [
+      "data/Mars_Cave_Catalog.csv",
+      "miscellaneous/Mars_Cave_Catalog_shapefile.csv"
+    ],
+    "total_companion_csv_records": 1062,
+    "coordinate_valid_records": 1062,
+    "invalid_coordinate_records": 0,
+    "primary_csv_header": [
+      "longitude:string",
+      "latitude:string",
+      "Label:string",
+      "TypeCode:string",
+      "Priority:string",
+      "APC_Diameter:string",
+      "APC_Depth:string",
+      "Comment:string"
+    ],
+    "primary_csv_first_data_row": [
+      "APC001",
+      "240.4585",
+      "-0.94678",
+      "APC",
+      "1",
+      "25",
+      "32",
+      "APC -- tiny ~25m"
+    ],
+    "primary_header_issue": "The primary CSV header begins longitude:string,latitude:string,Label:string, but its first data row begins APC001,240.4585,-0.94678, so header/row field order is inconsistent.",
+    "selected_companion_header": [
+      "longitude",
+      "latitude",
+      "Label:string",
+      "TypeCode:string",
+      "Priority:string",
+      "APC_Diameter:string",
+      "APC_Depth:string",
+      "Comment:string",
+      "Feature:string"
+    ],
+    "companion_sample_row": {
+      "longitude": "240.4585",
+      "latitude": "-0.94678",
+      "Label:string": "APC001",
+      "TypeCode:string": "APC"
+    }
+  },
+  "regional_filter": {
+    "region": "Arcadia Planitia project window",
+    "longitude_convention": "Catalog longitudes are 0–360 degrees east; filter used that convention directly.",
+    "bounds_inclusive": {
+      "longitude_east_deg": [
+        187,
+        203
+      ],
+      "latitude_north_deg": [
+        40,
+        52
+      ]
+    },
+    "equivalent_signed_longitude_deg": [
+      -173,
+      -157
+    ],
+    "candidate_count": 0,
+    "candidate_rows": [],
+    "result_interpretation": "Zero actual catalog candidates in the selected region. The empty subset is not caused by an invalid CSV parse: the companion CSV has explicit longitude/latitude columns and all 1,062 rows have valid coordinates."
+  },
+  "catalog_semantics": "Catalog features are orbital-image-derived candidate cave entrances; they are not confirmed accessible, safe, or usable shelters.",
+  "quality_notes": {
+    "selected_source": "miscellaneous/Mars_Cave_Catalog_shapefile.csv, because its header and row values unambiguously pair longitude then latitude.",
+    "primary_source_handling": "Did not use data/Mars_Cave_Catalog.csv for geographic filtering because its header order disagrees with its rows.",
+    "coordinate_checks": "Every companion record parsed to finite-range numeric longitude and latitude; no invalid coordinate rows."
+  },
+  "external_catalog_data_modified": false
+}
