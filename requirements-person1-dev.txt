@@ -1,0 +1,3 @@
+-r requirements-person1.txt
+httpx>=0.27,<1
+pytest>=8,<10

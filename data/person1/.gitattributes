@@ -1,0 +1,3 @@
+# Keep downloaded scientific exports byte-for-byte for provenance hashes.
+sources/*.txt -text -diff
+*.tif binary
