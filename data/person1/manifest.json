@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "region": "Arcadia Planitia",
+  "reference_grid": "../processed/grid.json",
+  "scenario": {
+    "id": "mcd62_ls90_noon",
+    "season_ls_deg": 90,
+    "local_solar_time_h": 12,
+    "dust": "climatology average solar",
+    "high_resolution_topography": false
+  },
+  "scenario_layers_ready": true,
+  "regional_measurements_complete": false,
+  "layers": {
+    "temperature_model_k": {
+      "file": "temperature_model_k.tif",
+      "unit": "K",
+      "data_class": "climate_model",
+      "coverage": 1.0,
+      "minimum": 265.2287902832031,
+      "maximum": 274.66522216796875
+    },
+    "dust_model_optical_depth": {
+      "file": "dust_model_optical_depth.tif",
+      "unit": "1",
+      "data_class": "climate_model",
+      "coverage": 1.0,
+      "minimum": 0.2580508887767792,
+      "maximum": 0.2769741117954254
+    },
+    "sunlight_model_w_m2": {
+      "file": "sunlight_model_w_m2.tif",
+      "unit": "W/m2",
+      "data_class": "climate_model",
+      "coverage": 1.0,
+      "minimum": 423.6544189453125,
+      "maximum": 463.47802734375
+    },
+    "surface_pressure_model_pa": {
+      "file": "surface_pressure_model_pa.tif",
+      "unit": "Pa",
+      "data_class": "climate_model",
+      "coverage": 1.0,
+      "minimum": 803.8954467773438,
+      "maximum": 816.8919067382812
+    },
+    "radiation_reference_msv_h": {
+      "file": "radiation_reference_msv_h.tif",
+      "unit": "mSv/h",
+      "data_class": "reference_assumption",
+      "coverage": 1.0,
+      "minimum": 0.027916666120290756,
+      "maximum": 0.027916666120290756,
+      "caveat": "Uniform extrapolation from Gale RAD 2012-2013; no Arcadia spatial or storm model"
+    }
+  },
+  "provenance": {
+    "source_urls": {
+      "table_query": "https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/mcdcgi.py?var1=tsurf&var2=dod&var3=fluxsurf_dn_sw&var4=ps&datekeyhtml=1&ls=90&localtime=12&latitude=39+53&longitude=186+204&altitude=0&zkey=3&isfixedlt=on&dust=1&hrkey=0&averaging=off&zonmean=off&diumean=off&animation=off&dpi=80&islog=off&colorm=jet&proj=cyl&iswind=off&betatest=on",
+      "longitude_query": "https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/mcdcgi.py?var1=tsurf&var2=none&var3=none&var4=none&datekeyhtml=1&ls=90&localtime=12&latitude=46&longitude=186+204&altitude=0&zkey=3&isfixedlt=on&dust=1&hrkey=0&averaging=off&zonmean=off&diumean=off&animation=off&dpi=80&islog=off&colorm=jet&proj=cyl&iswind=off&betatest=on"
+    },
+    "ascii_sha256": "601d4efb7952e5244c327bc0ea6abf3796fdcbd4351b950df6c9e8bdf3fd2088",
+    "longitude_sha256": "c1c82350224bd9d96e0f9fff07e887a09940928f8390c117db5213f043c4da8a",
+    "sampled_grid": {
+      "longitude_samples": 64,
+      "latitude_samples": 48
+    },
+    "coordinate_method": "Companion 1D longitude coordinates; 2D latitude header; bilinear interpolation"
+  },
+  "citations": [
+    "https://www-mars.lmd.jussieu.fr/mcd_python/",
+    "https://www-mars.lmd.jussieu.fr/mars/info_web/index.html",
+    "https://www-mars.lmd.jussieu.fr/mars/access.html",
+    "https://www.nasa.gov/news-release/nasa-rover-results-include-first-age-measurement-on-mars-and-help-for-human-exploration/",
+    "https://stac.astrogeology.usgs.gov/docs/data/mars/themis_controlled_mosaics/"
+  ],
+  "caveats": [
+    "MCD is an interpolated climate model; this sample is northern summer at local noon, not a forecast.",
+    "3 km output alignment does not create 3 km climate measurements.",
+    "Existing THEMIS PBT remains a separate partial observation layer, not blended with this scenario.",
+    "Sunlight is horizontal-surface instantaneous model flux, not annual solar availability.",
+    "Dust optical depth is an atmospheric proxy, not dust-storm probability or terrain trafficability.",
+    "Radiation is a uniform reference assumption; no measured Arcadia radiation or shielding map is supplied.",
+    "Cave catalog contains zero candidates in the region; no shelter locations are invented.",
+    "MCD source terms allow scientific use; commercial use needs provider authorization."
+  ]
+}

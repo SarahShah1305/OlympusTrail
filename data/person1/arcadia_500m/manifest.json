@@ -1,0 +1,536 @@
+{
+  "schema_version": 2,
+  "region": "Arcadia Planitia (extended north)",
+  "bounds_lonlat": [
+    -173.0,
+    40.0,
+    -157.0,
+    58.0
+  ],
+  "crs": "PROJCS[\"unknown\",GEOGCS[\"unknown\",DATUM[\"unknown\",SPHEROID[\"unknown\",3396190,0]],PRIMEM[\"Reference meridian\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Equirectangular\"],PARAMETER[\"standard_parallel_1\",49],PARAMETER[\"central_meridian\",-165],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+  "transform": [
+    500.0,
+    0.0,
+    -311101.6040067704,
+    0.0,
+    -500.0,
+    3437932.4563517612
+  ],
+  "width": 1244,
+  "height": 2134,
+  "pixel_m": 500.0,
+  "layers": {
+    "elevation_m": {
+      "file": "elevation_m.tif",
+      "unit": "m",
+      "description": "MOLA MEGDR 128 px/deg median topography above areoid",
+      "coverage": 1.0,
+      "minimum": -4805.634765625,
+      "maximum": -3085.081787109375
+    },
+    "slope_deg": {
+      "file": "slope_deg.tif",
+      "unit": "degree",
+      "description": "Slope from 500 m MOLA grid, latitude-corrected",
+      "coverage": 1.0,
+      "minimum": 0.0,
+      "maximum": 29.13134765625
+    },
+    "aspect_deg": {
+      "file": "aspect_deg.tif",
+      "unit": "degree",
+      "description": "Downhill bearing clockwise from north",
+      "coverage": 1.0,
+      "minimum": 0.0,
+      "maximum": 359.9984130859375
+    },
+    "ice_consistency": {
+      "file": "ice_consistency.tif",
+      "unit": "1",
+      "description": "SWIM Combined Ice Consistency 0-1 m (native ~3 km)",
+      "coverage": 1.0,
+      "minimum": 0.2748236358165741,
+      "maximum": 0.9975874423980713
+    },
+    "thermal_observed_k": {
+      "file": "thermal_observed_k.tif",
+      "unit": "K",
+      "description": "Historical THEMIS atlas: original P2 observations plus retained calibrated samples; nearest regrid",
+      "coverage": 0.24004895475790824,
+      "minimum": 163.1768798828125,
+      "maximum": 205.0453643798828
+    },
+    "temperature_lt00_k": {
+      "file": "temperature_lt00_k.tif",
+      "unit": "K",
+      "description": "MCD v6.2 surface temperature, Ls 90, 00h local",
+      "coverage": 1.0,
+      "minimum": 185.93873596191406,
+      "maximum": 201.426025390625
+    },
+    "sunlight_lt00_w_m2": {
+      "file": "sunlight_lt00_w_m2.tif",
+      "unit": "W/m2",
+      "description": "MCD v6.2 incident solar flux on horizontal surface, Ls 90, 00h local",
+      "coverage": 1.0,
+      "minimum": 0.0,
+      "maximum": 0.0
+    },
+    "temperature_lt06_k": {
+      "file": "temperature_lt06_k.tif",
+      "unit": "K",
+      "description": "MCD v6.2 surface temperature, Ls 90, 06h local",
+      "coverage": 1.0,
+      "minimum": 194.43414306640625,
+      "maximum": 211.2622528076172
+    },
+    "sunlight_lt06_w_m2": {
+      "file": "sunlight_lt06_w_m2.tif",
+      "unit": "W/m2",
+      "description": "MCD v6.2 incident solar flux on horizontal surface, Ls 90, 06h local",
+      "coverage": 1.0,
+      "minimum": 106.18395233154297,
+      "maximum": 147.46902465820312
+    },
+    "temperature_lt12_k": {
+      "file": "temperature_lt12_k.tif",
+      "unit": "K",
+      "description": "MCD v6.2 surface temperature, Ls 90, 12h local",
+      "coverage": 1.0,
+      "minimum": 262.18023681640625,
+      "maximum": 274.6177673339844
+    },
+    "sunlight_lt12_w_m2": {
+      "file": "sunlight_lt12_w_m2.tif",
+      "unit": "W/m2",
+      "description": "MCD v6.2 incident solar flux on horizontal surface, Ls 90, 12h local",
+      "coverage": 1.0,
+      "minimum": 393.9484558105469,
+      "maximum": 463.43017578125
+    },
+    "temperature_lt18_k": {
+      "file": "temperature_lt18_k.tif",
+      "unit": "K",
+      "description": "MCD v6.2 surface temperature, Ls 90, 18h local",
+      "coverage": 1.0,
+      "minimum": 230.86898803710938,
+      "maximum": 242.76446533203125
+    },
+    "sunlight_lt18_w_m2": {
+      "file": "sunlight_lt18_w_m2.tif",
+      "unit": "W/m2",
+      "description": "MCD v6.2 incident solar flux on horizontal surface, Ls 90, 18h local",
+      "coverage": 1.0,
+      "minimum": 108.68719482421875,
+      "maximum": 150.60792541503906
+    },
+    "dust_optical_depth": {
+      "file": "dust_optical_depth.tif",
+      "unit": "1",
+      "description": "MCD v6.2 monthly-mean dust column optical depth, Ls 90",
+      "coverage": 1.0,
+      "minimum": 0.2528759837150574,
+      "maximum": 0.2746434509754181
+    },
+    "sunlight_mean_w_m2": {
+      "file": "sunlight_mean_w_m2.tif",
+      "unit": "W/m2",
+      "description": "Mean of 4 local-time MCD solar flux samples (relative use only)",
+      "coverage": 1.0,
+      "minimum": 170.18270874023438,
+      "maximum": 175.57797241210938
+    },
+    "pressure_pa": {
+      "file": "pressure_pa.tif",
+      "unit": "Pa",
+      "description": "Diurnal-mean MCD surface pressure, adjusted to 500 m DEM",
+      "coverage": 1.0,
+      "minimum": 738.6915283203125,
+      "maximum": 860.5305786132812
+    },
+    "sky_blocked_fraction": {
+      "file": "sky_blocked_fraction.tif",
+      "unit": "1",
+      "description": "DEM horizon obstruction within 6 km; no validated radiation attenuation",
+      "coverage": 1.0,
+      "minimum": 0.0,
+      "maximum": 0.2681158781051636,
+      "data_class": "dem_geometry_proxy"
+    },
+    "radiation_msv_h": {
+      "file": "radiation_msv_h.tif",
+      "unit": "mSv/h",
+      "description": "Uniform Gale RAD reference; off-region assumption without pressure or terrain attenuation",
+      "coverage": 1.0,
+      "minimum": 0.027916666120290756,
+      "maximum": 0.027916666120290756,
+      "data_class": "off_region_reference_assumption"
+    }
+  },
+  "local_times_h": [
+    0,
+    6,
+    12,
+    18
+  ],
+  "shelters": {
+    "file": "terrain_shelter_candidates.geojson",
+    "count": 50,
+    "threshold_sky_blocked": 0.02,
+    "kind": "unverified_terrain_obstruction_candidate",
+    "verified_shelter_count": 0,
+    "radiation_protection_validated": false
+  },
+  "caves": {
+    "catalog_title": "Mars Global Cave Candidate Catalog v1 (Cushing)",
+    "source_url": "https://astrogeology.usgs.gov/ckan/dataset/c2960f77-ee20-4cc6-ac85-abbecc0fc7f6/resource/ccd54fb2-9a50-46bf-8971-80c241bb2f40/download/mars_cave_catalog.zip",
+    "landing_page": "https://astrogeology.usgs.gov/search/map/mars_global_cave_candidate_catalog_v1_cushing",
+    "zip_sha256": "d2703c128b29f47d44bd482344887156bae82831a636844d1418d75661726097",
+    "companion_csv_sha256": "8361b3ed55fd26146eaf9af52636158793491b9dc0b905dbb6c31c09d00a9a16",
+    "catalog_total": 1062,
+    "region_bounds_inclusive": {
+      "longitude_east_deg": [
+        187,
+        203
+      ],
+      "latitude_north_deg": [
+        40,
+        58
+      ]
+    },
+    "longitude_convention": "0-360 degrees east, matching explicit companion CSV longitude column",
+    "count_40_58N": 0,
+    "checked_40_58N": true,
+    "checked_52_58N": true,
+    "candidate_geojson": "../../cave_candidates.geojson",
+    "zip_members": [
+      "data/",
+      "data/Mars_Cave_Catalog.xml",
+      "data/Mars_Cave_Catalog.csv",
+      "data/collection_data_inventory.csv",
+      "data/collection_data_inventory.xml",
+      "document/",
+      "document/collection_document_inventory.xml",
+      "document/mars_cave_catalog_archive_description.pdf",
+      "document/collection_document_inventory.csv",
+      "document/mars_cave_catalog_archive_description.xml",
+      "mars_mro.odyssey_multi_cavecatalog_cushing_2016.xml",
+      "MGC3_README.pdf",
+      "MGC3_README.xml",
+      "miscellaneous/",
+      "miscellaneous/Mars_Cave_Catalog_shapefile.xml",
+      "miscellaneous/Mars_Cave_Catalog_shapefile.csv",
+      "miscellaneous/collection_misc_inventory.csv",
+      "miscellaneous/collection_misc_inventory.xml"
+    ],
+    "interpretation": "Candidate cave entrances from orbital imagery only; no confirmed accessible or safe shelters. A zero regional count is an actual filter result from the coordinate-explicit companion CSV, not a parse failure."
+  },
+  "sources": {
+    "mola": {
+      "file": "mola_megdr128_38-60N_185-205E.be_int16.bin",
+      "sha256": "236c9f1b27b9812e212a2ed32998f6e0e3d0f2a5a3e7536e4b10ec4b8d6be00c",
+      "products": [
+        "MEGT88N180HB.IMG rows 3584-5631",
+        "MEGT44N180HB.IMG rows 0-767"
+      ],
+      "columns": "640-3199 (185-205E)",
+      "url": "https://pds-geosciences.wustl.edu/mgs/mgs-m-mola-5-megdr-l3-v1/mgsl_300x/meg128/"
+    },
+    "swim": {
+      "file": "SWIM4MIM_Ci_0_1.tif",
+      "sha256": "ed618121ce8fd5310ccfc6685e56a4695c48869a35b9afef7506b06a56c8be4f",
+      "url": "https://swim.psi.edu/SWIM4MIMProducts.php"
+    },
+    "mcd": {
+      "file": "mcd62_ls90_lt00-06-12-18.json",
+      "sha256": "7fef97d673e89b4ca468e6aefc3461bdfe10817599b21c6159bd794942a12ec0",
+      "retrieved": "2026-11-13T16:37:48.411Z",
+      "scenario": "MCD v6.2, climatology average solar dust, Ls 90, altitude 0 m",
+      "exports": {
+        "0": {
+          "query": "https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/mcdcgi.py?var1=tsurf&var2=dod&var3=fluxsurf_dn_sw&var4=ps&datekeyhtml=1&ls=90&localtime=0&latitude=38+60&longitude=185+205&altitude=0&zkey=3&isfixedlt=on&dust=1&hrkey=0&averaging=off&zonmean=off&diumean=off&animation=off&dpi=80&islog=off&colorm=jet&proj=cyl&iswind=off&betatest=on",
+          "txt": "https://www-mars.lmd.jussieu.fr/mcd_python/txt/a2042b06eaa74c1469bdee69840a7c79.txt"
+        },
+        "6": {
+          "query": "https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/mcdcgi.py?var1=tsurf&var2=dod&var3=fluxsurf_dn_sw&var4=ps&datekeyhtml=1&ls=90&localtime=6&latitude=38+60&longitude=185+205&altitude=0&zkey=3&isfixedlt=on&dust=1&hrkey=0&averaging=off&zonmean=off&diumean=off&animation=off&dpi=80&islog=off&colorm=jet&proj=cyl&iswind=off&betatest=on",
+          "txt": "https://www-mars.lmd.jussieu.fr/mcd_python/txt/eff575d32017f9a1f85eb9fb7f6a19f4.txt"
+        },
+        "12": {
+          "query": "https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/mcdcgi.py?var1=tsurf&var2=dod&var3=fluxsurf_dn_sw&var4=ps&datekeyhtml=1&ls=90&localtime=12&latitude=38+60&longitude=185+205&altitude=0&zkey=3&isfixedlt=on&dust=1&hrkey=0&averaging=off&zonmean=off&diumean=off&animation=off&dpi=80&islog=off&colorm=jet&proj=cyl&iswind=off&betatest=on",
+          "txt": "https://www-mars.lmd.jussieu.fr/mcd_python/txt/fc21f199632da597d84cd1c302b7d15f.txt"
+        },
+        "18": {
+          "query": "https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/mcdcgi.py?var1=tsurf&var2=dod&var3=fluxsurf_dn_sw&var4=ps&datekeyhtml=1&ls=90&localtime=18&latitude=38+60&longitude=185+205&altitude=0&zkey=3&isfixedlt=on&dust=1&hrkey=0&averaging=off&zonmean=off&diumean=off&animation=off&dpi=80&islog=off&colorm=jet&proj=cyl&iswind=off&betatest=on",
+          "txt": "https://www-mars.lmd.jussieu.fr/mcd_python/txt/02473f9ac59034d12e68d4120137f158.txt"
+        }
+      },
+      "url": "https://www-mars.lmd.jussieu.fr/mcd_python/"
+    },
+    "thermal": {
+      "file": "data/processed/thermal_brightness_temperature_k.tif",
+      "note": "Person 2's 3 km THEMIS PBT mosaic, nearest-neighbour regrid"
+    },
+    "radiation": {
+      "model": "Uniform 0.67 mSv per 24 Earth hours / 24",
+      "citation": "https://www.nasa.gov/news-release/nasa-rover-results-include-first-age-measurement-on-mars-and-help-for-human-exploration/",
+      "observation_site": "Gale crater, August 2012-June 2013",
+      "rate_convention": "Reference interpreted per 24 Earth hours for planner time units",
+      "arcadia_measurement": false,
+      "shielding_correction_applied": false,
+      "pressure_correction_applied": false,
+      "absorbed_dose_conversion_applied": false,
+      "caveat": "Reference scenario only; no regional calibration, particle transport or solar storm model"
+    }
+  },
+  "scenario_layers_ready": true,
+  "regional_measurements_complete": false,
+  "validated_radiation_shielding_available": false,
+  "caveats": [
+    "Scenario layers provide complete numerical coverage using climate models and reference assumptions.",
+    "Thermal observations are historical, partial, and acquired at different dates/local times; no model fill is applied.",
+    "Regridding observations from 3 km to 500 m does not add measurement detail.",
+    "Pressure downscaling uses a smoothed DEM as an illustrative coarse-terrain proxy; it is not a validated local pressure field.",
+    "DEM sky obstruction is excluded from radiation dose and site shielding scores.",
+    "Terrain candidates are unverified; no safe shelter or radiation protection is established."
+  ],
+  "thermal_retention": {
+    "data_class": "historical_observation_atlas",
+    "unit": "K",
+    "method": "Nearest-neighbor reprojection from retained 3 km THEMIS observations onto the 500 m Claude grid; original finite Claude cells are preserved exactly; only missing cells are filled from calibrated source IDs > 0.",
+    "input_raster": "data/person1_complete/thermal_observations_k.tif",
+    "input_source_ids": "data/person1_complete/thermal_observation_source_id.tif",
+    "input_provenance": "data/person1_complete/thermal_provenance.json",
+    "input_sha256": {
+      "thermal_observations_k.tif": "c7aa53632d3dfe1fe5791ea5affe64356a7a22d8a82fb0233ddf042eaf9461b8",
+      "thermal_observation_source_id.tif": "034bb5679392945be8c06d9550e252774855c168425f8651490e7f08e1fda9da",
+      "thermal_provenance.json": "aae4213413a69816ff52bb5dcfe1bc334c9b398a6452bdbcef9a46bfc6fc24be"
+    },
+    "output_finite_cells": 637257,
+    "output_total_cells": 2654696,
+    "output_coverage_fraction": 0.24004895475790824,
+    "original_finite_cells_preserved": 100772,
+    "existing_finite_cells_preserved_this_run": 637257,
+    "total_retained_addition_cells": 536485,
+    "newly_filled_cells_this_run": 0,
+    "source_id_cell_counts": {
+      "-1": 2017439,
+      "0": 100772,
+      "1": 14198,
+      "2": 39285,
+      "3": 29523,
+      "4": 15903,
+      "5": 17346,
+      "6": 63450,
+      "7": 28560,
+      "9": 92306,
+      "10": 21366,
+      "11": 33558,
+      "12": 48084,
+      "14": 27084,
+      "15": 58734,
+      "16": 47088
+    },
+    "source_id_mapping": {
+      "1": "IA1013014",
+      "2": "IA1200013",
+      "3": "I60208005",
+      "4": "I97269002",
+      "5": "IA5755002",
+      "6": "I52968008",
+      "7": "IA1125006",
+      "8": "I38774006",
+      "9": "I93557013",
+      "10": "I97419002",
+      "11": "IA1175013",
+      "12": "IA1100014",
+      "13": "I36291016",
+      "14": "IA1300009",
+      "15": "I98205003",
+      "16": "I97893010",
+      "0": "Claude base THEMIS PBT observations (preserved)",
+      "-1": "Unknown / no finite observation"
+    },
+    "source_observation_provenance": {
+      "initial_valid_cells": 2972,
+      "valid_cells": 18791,
+      "total_cells": 52360,
+      "coverage_fraction": 0.3588808250572956,
+      "products": [
+        {
+          "id": "IA1013014",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia10xxpbt/IA1013014PBT.IMG",
+          "header_sha256": "2ba3f4d76ed065f080632993485f408bc5f31ce47630b176a93025a8e188270f",
+          "timestamp": "2024-09-21T17:36:38.587",
+          "sampled_cells": 426,
+          "requested_rows": 40,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.06489686783804431
+        },
+        {
+          "id": "IA1200013",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia12xxpbt/IA1200013PBT.IMG",
+          "header_sha256": "6a560fd30c4875dd3fc76ebac5de137913a941af5ac12b3b3f73a9d1ed831dab",
+          "timestamp": "2024-10-07T03:07:11.578",
+          "sampled_cells": 1164,
+          "requested_rows": 106,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.0871275783040489
+        },
+        {
+          "id": "I60208005",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0055/i602xxpbt/I60208005PBT.IMG",
+          "header_sha256": "2adc3acfde0283f040b15a1586a6c3df545d23600d15fea6d0aa3f4bcab7625d",
+          "timestamp": "2015-07-11T06:50:57.465",
+          "sampled_cells": 878,
+          "requested_rows": 90,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.1038961038961039
+        },
+        {
+          "id": "I97269002",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0088/i972xxpbt/I97269002PBT.IMG",
+          "header_sha256": "f3ef3bc4908d1cfcb4677e9383cd3b16f04f1d16c2fdb681ce4f5186a6fae38f",
+          "timestamp": "2023-11-18T11:03:14.610",
+          "sampled_cells": 473,
+          "requested_rows": 48,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.11292971734148205
+        },
+        {
+          "id": "IA5755002",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0096/ia57xxpbt/IA5755002PBT.IMG",
+          "header_sha256": "e4c2e3512ca1a25ed3e950b32298117457f9fab0e4675e7675caeafcde642c75",
+          "timestamp": "2025-10-17T04:20:02.357",
+          "sampled_cells": 510,
+          "requested_rows": 60,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.1226699770817418
+        },
+        {
+          "id": "I52968008",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0048/i529xxpbt/I52968008PBT.IMG",
+          "header_sha256": "90e61389fac224d7753249305757e9c82a94aacda8f137bd13b74dbb94ed8bc3",
+          "timestamp": "2013-11-22T06:56:41.511",
+          "sampled_cells": 1866,
+          "requested_rows": 178,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.15830786860198626
+        },
+        {
+          "id": "IA1125006",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia11xxpbt/IA1125006PBT.IMG",
+          "header_sha256": "7a4b31bace38632af03dd99271823ce53bfb9f3141e58887ec599e4dc2e0a657",
+          "timestamp": "2024-09-30T22:54:23.083",
+          "sampled_cells": 840,
+          "requested_rows": 119,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.17435064935064934
+        },
+        {
+          "id": "I38774006",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip1_0035/i387xxpbt/I38774006PBT.IMG",
+          "error": "Only explicitly encoded float32 PBT is sampled: UNSIGNED_INTEGER"
+        },
+        {
+          "id": "I93557013",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0085/i935xxpbt/I93557013PBT.IMG",
+          "header_sha256": "8ed3fa869bea3fb5e45bf078d2c24199f32e8d008763fd6a678deedf4bf6b382",
+          "timestamp": "2023-01-16T19:09:16.181",
+          "sampled_cells": 2724,
+          "requested_rows": 238,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.22637509549274254
+        },
+        {
+          "id": "I97419002",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0089/i974xxpbt/I97419002PBT.IMG",
+          "header_sha256": "90c89458b9003fb74721ca6e27dcec4ce626cc64d236366e258e458404d855c2",
+          "timestamp": "2023-11-30T19:25:40.905",
+          "sampled_cells": 629,
+          "requested_rows": 61,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.23838808250572957
+        },
+        {
+          "id": "IA1175013",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia11xxpbt/IA1175013PBT.IMG",
+          "header_sha256": "42f1332a2c1b7c2c8daed1a3fd413f30c08e3faffe626066d379d8596de02294",
+          "timestamp": "2024-10-05T01:41:17.013",
+          "sampled_cells": 987,
+          "requested_rows": 119,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.2572383498854087
+        },
+        {
+          "id": "IA1100014",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia11xxpbt/IA1100014PBT.IMG",
+          "header_sha256": "170308049501ebd4167bb39529e0ee74a2c06b2856ed8e8ac6b2b8f6113c1086",
+          "timestamp": "2024-09-28T21:29:08.116",
+          "sampled_cells": 1414,
+          "requested_rows": 119,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.2842436974789916
+        },
+        {
+          "id": "I36291016",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip1_0033/i362xxpbt/I36291016PBT.IMG",
+          "error": "Only explicitly encoded float32 PBT is sampled: UNSIGNED_INTEGER"
+        },
+        {
+          "id": "IA1300009",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia13xxpbt/IA1300009PBT.IMG",
+          "header_sha256": "c55d57e299a5281fad261a5923d656cb8bacc751eae5eb2ad18732a40c91dd4d",
+          "timestamp": "2024-10-15T08:40:45.040",
+          "sampled_cells": 796,
+          "requested_rows": 64,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.2994461420932009
+        },
+        {
+          "id": "I98205003",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0089/i982xxpbt/I98205003PBT.IMG",
+          "header_sha256": "b0f00eef263788d2fecea90db8ab75fd5f1c4fe95c73702df2acfa1022120121",
+          "timestamp": "2024-02-03T12:36:55.262",
+          "sampled_cells": 1727,
+          "requested_rows": 148,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.33242933537051184
+        },
+        {
+          "id": "I97893010",
+          "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0089/i978xxpbt/I97893010PBT.IMG",
+          "header_sha256": "0e6dea882278074ec1b02a786acef0a4954e4590632b207baf037a220fa1bef9",
+          "timestamp": "2024-01-08T20:04:17.330",
+          "sampled_cells": 1385,
+          "requested_rows": 146,
+          "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+          "coverage_fraction_after": 0.3588808250572956
+        }
+      ],
+      "source_id_mapping": {
+        "1": "IA1013014",
+        "2": "IA1200013",
+        "3": "I60208005",
+        "4": "I97269002",
+        "5": "IA5755002",
+        "6": "I52968008",
+        "7": "IA1125006",
+        "8": "I38774006",
+        "9": "I93557013",
+        "10": "I97419002",
+        "11": "IA1175013",
+        "12": "IA1100014",
+        "13": "I36291016",
+        "14": "IA1300009",
+        "15": "I98205003",
+        "16": "I97893010"
+      },
+      "caveat": "Historical observations at different dates/local times; not one contemporaneous map. Unobserved cells remain nodata."
+    },
+    "limitations": [
+      "Historical acquisitions span different dates and local times; this is not a contemporaneous map.",
+      "Nearest-neighbor reprojection to 500 m does not add measurement detail beyond the native approximately 3 km source grid.",
+      "Unobserved target cells remain nodata; no model fill is applied."
+    ]
+  }
+}

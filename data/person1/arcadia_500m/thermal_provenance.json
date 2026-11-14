@@ -1,0 +1,240 @@
+{
+  "data_class": "historical_observation_atlas",
+  "unit": "K",
+  "method": "Nearest-neighbor reprojection from retained 3 km THEMIS observations onto the 500 m Claude grid; original finite Claude cells are preserved exactly; only missing cells are filled from calibrated source IDs > 0.",
+  "input_raster": "data/person1_complete/thermal_observations_k.tif",
+  "input_source_ids": "data/person1_complete/thermal_observation_source_id.tif",
+  "input_provenance": "data/person1_complete/thermal_provenance.json",
+  "input_sha256": {
+    "thermal_observations_k.tif": "c7aa53632d3dfe1fe5791ea5affe64356a7a22d8a82fb0233ddf042eaf9461b8",
+    "thermal_observation_source_id.tif": "034bb5679392945be8c06d9550e252774855c168425f8651490e7f08e1fda9da",
+    "thermal_provenance.json": "aae4213413a69816ff52bb5dcfe1bc334c9b398a6452bdbcef9a46bfc6fc24be"
+  },
+  "output_finite_cells": 637257,
+  "output_total_cells": 2654696,
+  "output_coverage_fraction": 0.24004895475790824,
+  "original_finite_cells_preserved": 100772,
+  "existing_finite_cells_preserved_this_run": 637257,
+  "total_retained_addition_cells": 536485,
+  "newly_filled_cells_this_run": 0,
+  "source_id_cell_counts": {
+    "-1": 2017439,
+    "0": 100772,
+    "1": 14198,
+    "2": 39285,
+    "3": 29523,
+    "4": 15903,
+    "5": 17346,
+    "6": 63450,
+    "7": 28560,
+    "9": 92306,
+    "10": 21366,
+    "11": 33558,
+    "12": 48084,
+    "14": 27084,
+    "15": 58734,
+    "16": 47088
+  },
+  "source_id_mapping": {
+    "1": "IA1013014",
+    "2": "IA1200013",
+    "3": "I60208005",
+    "4": "I97269002",
+    "5": "IA5755002",
+    "6": "I52968008",
+    "7": "IA1125006",
+    "8": "I38774006",
+    "9": "I93557013",
+    "10": "I97419002",
+    "11": "IA1175013",
+    "12": "IA1100014",
+    "13": "I36291016",
+    "14": "IA1300009",
+    "15": "I98205003",
+    "16": "I97893010",
+    "0": "Claude base THEMIS PBT observations (preserved)",
+    "-1": "Unknown / no finite observation"
+  },
+  "source_observation_provenance": {
+    "initial_valid_cells": 2972,
+    "valid_cells": 18791,
+    "total_cells": 52360,
+    "coverage_fraction": 0.3588808250572956,
+    "products": [
+      {
+        "id": "IA1013014",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia10xxpbt/IA1013014PBT.IMG",
+        "header_sha256": "2ba3f4d76ed065f080632993485f408bc5f31ce47630b176a93025a8e188270f",
+        "timestamp": "2024-09-21T17:36:38.587",
+        "sampled_cells": 426,
+        "requested_rows": 40,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.06489686783804431
+      },
+      {
+        "id": "IA1200013",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia12xxpbt/IA1200013PBT.IMG",
+        "header_sha256": "6a560fd30c4875dd3fc76ebac5de137913a941af5ac12b3b3f73a9d1ed831dab",
+        "timestamp": "2024-10-07T03:07:11.578",
+        "sampled_cells": 1164,
+        "requested_rows": 106,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.0871275783040489
+      },
+      {
+        "id": "I60208005",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0055/i602xxpbt/I60208005PBT.IMG",
+        "header_sha256": "2adc3acfde0283f040b15a1586a6c3df545d23600d15fea6d0aa3f4bcab7625d",
+        "timestamp": "2015-07-11T06:50:57.465",
+        "sampled_cells": 878,
+        "requested_rows": 90,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.1038961038961039
+      },
+      {
+        "id": "I97269002",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0088/i972xxpbt/I97269002PBT.IMG",
+        "header_sha256": "f3ef3bc4908d1cfcb4677e9383cd3b16f04f1d16c2fdb681ce4f5186a6fae38f",
+        "timestamp": "2023-11-18T11:03:14.610",
+        "sampled_cells": 473,
+        "requested_rows": 48,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.11292971734148205
+      },
+      {
+        "id": "IA5755002",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0096/ia57xxpbt/IA5755002PBT.IMG",
+        "header_sha256": "e4c2e3512ca1a25ed3e950b32298117457f9fab0e4675e7675caeafcde642c75",
+        "timestamp": "2025-10-17T04:20:02.357",
+        "sampled_cells": 510,
+        "requested_rows": 60,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.1226699770817418
+      },
+      {
+        "id": "I52968008",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0048/i529xxpbt/I52968008PBT.IMG",
+        "header_sha256": "90e61389fac224d7753249305757e9c82a94aacda8f137bd13b74dbb94ed8bc3",
+        "timestamp": "2013-11-22T06:56:41.511",
+        "sampled_cells": 1866,
+        "requested_rows": 178,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.15830786860198626
+      },
+      {
+        "id": "IA1125006",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia11xxpbt/IA1125006PBT.IMG",
+        "header_sha256": "7a4b31bace38632af03dd99271823ce53bfb9f3141e58887ec599e4dc2e0a657",
+        "timestamp": "2024-09-30T22:54:23.083",
+        "sampled_cells": 840,
+        "requested_rows": 119,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.17435064935064934
+      },
+      {
+        "id": "I38774006",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip1_0035/i387xxpbt/I38774006PBT.IMG",
+        "error": "Only explicitly encoded float32 PBT is sampled: UNSIGNED_INTEGER"
+      },
+      {
+        "id": "I93557013",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0085/i935xxpbt/I93557013PBT.IMG",
+        "header_sha256": "8ed3fa869bea3fb5e45bf078d2c24199f32e8d008763fd6a678deedf4bf6b382",
+        "timestamp": "2023-01-16T19:09:16.181",
+        "sampled_cells": 2724,
+        "requested_rows": 238,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.22637509549274254
+      },
+      {
+        "id": "I97419002",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0089/i974xxpbt/I97419002PBT.IMG",
+        "header_sha256": "90c89458b9003fb74721ca6e27dcec4ce626cc64d236366e258e458404d855c2",
+        "timestamp": "2023-11-30T19:25:40.905",
+        "sampled_cells": 629,
+        "requested_rows": 61,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.23838808250572957
+      },
+      {
+        "id": "IA1175013",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia11xxpbt/IA1175013PBT.IMG",
+        "header_sha256": "42f1332a2c1b7c2c8daed1a3fd413f30c08e3faffe626066d379d8596de02294",
+        "timestamp": "2024-10-05T01:41:17.013",
+        "sampled_cells": 987,
+        "requested_rows": 119,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.2572383498854087
+      },
+      {
+        "id": "IA1100014",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia11xxpbt/IA1100014PBT.IMG",
+        "header_sha256": "170308049501ebd4167bb39529e0ee74a2c06b2856ed8e8ac6b2b8f6113c1086",
+        "timestamp": "2024-09-28T21:29:08.116",
+        "sampled_cells": 1414,
+        "requested_rows": 119,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.2842436974789916
+      },
+      {
+        "id": "I36291016",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip1_0033/i362xxpbt/I36291016PBT.IMG",
+        "error": "Only explicitly encoded float32 PBT is sampled: UNSIGNED_INTEGER"
+      },
+      {
+        "id": "IA1300009",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0092/ia13xxpbt/IA1300009PBT.IMG",
+        "header_sha256": "c55d57e299a5281fad261a5923d656cb8bacc751eae5eb2ad18732a40c91dd4d",
+        "timestamp": "2024-10-15T08:40:45.040",
+        "sampled_cells": 796,
+        "requested_rows": 64,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.2994461420932009
+      },
+      {
+        "id": "I98205003",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0089/i982xxpbt/I98205003PBT.IMG",
+        "header_sha256": "b0f00eef263788d2fecea90db8ab75fd5f1c4fe95c73702df2acfa1022120121",
+        "timestamp": "2024-02-03T12:36:55.262",
+        "sampled_cells": 1727,
+        "requested_rows": 148,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.33242933537051184
+      },
+      {
+        "id": "I97893010",
+        "url": "https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0089/i978xxpbt/I97893010PBT.IMG",
+        "header_sha256": "0e6dea882278074ec1b02a786acef0a4954e4590632b207baf037a220fa1bef9",
+        "timestamp": "2024-01-08T20:04:17.330",
+        "sampled_cells": 1385,
+        "requested_rows": 146,
+        "sampling": "nearest 100 m PBT pixel at each 3 km analysis-cell center",
+        "coverage_fraction_after": 0.3588808250572956
+      }
+    ],
+    "source_id_mapping": {
+      "1": "IA1013014",
+      "2": "IA1200013",
+      "3": "I60208005",
+      "4": "I97269002",
+      "5": "IA5755002",
+      "6": "I52968008",
+      "7": "IA1125006",
+      "8": "I38774006",
+      "9": "I93557013",
+      "10": "I97419002",
+      "11": "IA1175013",
+      "12": "IA1100014",
+      "13": "I36291016",
+      "14": "IA1300009",
+      "15": "I98205003",
+      "16": "I97893010"
+    },
+    "caveat": "Historical observations at different dates/local times; not one contemporaneous map. Unobserved cells remain nodata."
+  },
+  "limitations": [
+    "Historical acquisitions span different dates and local times; this is not a contemporaneous map.",
+    "Nearest-neighbor reprojection to 500 m does not add measurement detail beyond the native approximately 3 km source grid.",
+    "Unobserved target cells remain nodata; no model fill is applied."
+  ]
+}

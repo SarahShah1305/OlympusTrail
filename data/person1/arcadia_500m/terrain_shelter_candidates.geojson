@@ -1,0 +1,1005 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -164.03187,
+          49.59422
+        ]
+      },
+      "properties": {
+        "row": 996,
+        "col": 697,
+        "sky_blocked_fraction": 0.2681,
+        "slope_deg": 13.34,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -163.80043,
+          42.50857
+        ]
+      },
+      "properties": {
+        "row": 1836,
+        "col": 715,
+        "sky_blocked_fraction": 0.2227,
+        "slope_deg": 26.41,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.21346,
+          54.57105
+        ]
+      },
+      "properties": {
+        "row": 406,
+        "col": 294,
+        "sky_blocked_fraction": 0.206,
+        "slope_deg": 21.56,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.15309,
+          44.56678
+        ]
+      },
+      "properties": {
+        "row": 1592,
+        "col": 1232,
+        "sky_blocked_fraction": 0.2013,
+        "slope_deg": 9.14,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -163.89044,
+          42.47483
+        ]
+      },
+      "properties": {
+        "row": 1840,
+        "col": 708,
+        "sky_blocked_fraction": 0.1954,
+        "slope_deg": 22.9,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.34203,
+          54.4867
+        ]
+      },
+      "properties": {
+        "row": 416,
+        "col": 284,
+        "sky_blocked_fraction": 0.1891,
+        "slope_deg": 22.06,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.45775,
+          54.6301
+        ]
+      },
+      "properties": {
+        "row": 399,
+        "col": 275,
+        "sky_blocked_fraction": 0.1887,
+        "slope_deg": 22.89,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.07594,
+          44.60052
+        ]
+      },
+      "properties": {
+        "row": 1588,
+        "col": 1238,
+        "sky_blocked_fraction": 0.1863,
+        "slope_deg": 26.34,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -159.28744,
+          55.21213
+        ]
+      },
+      "properties": {
+        "row": 330,
+        "col": 1066,
+        "sky_blocked_fraction": 0.1835,
+        "slope_deg": 3.7,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -163.85186,
+          42.36517
+        ]
+      },
+      "properties": {
+        "row": 1853,
+        "col": 711,
+        "sky_blocked_fraction": 0.1832,
+        "slope_deg": 20.94,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.30346,
+          54.64697
+        ]
+      },
+      "properties": {
+        "row": 397,
+        "col": 287,
+        "sky_blocked_fraction": 0.183,
+        "slope_deg": 18.86,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.1788,
+          44.4993
+        ]
+      },
+      "properties": {
+        "row": 1600,
+        "col": 1230,
+        "sky_blocked_fraction": 0.1748,
+        "slope_deg": 26.16,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.34203,
+          54.54574
+        ]
+      },
+      "properties": {
+        "row": 409,
+        "col": 284,
+        "sky_blocked_fraction": 0.1715,
+        "slope_deg": 11.71,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.15309,
+          44.40651
+        ]
+      },
+      "properties": {
+        "row": 1611,
+        "col": 1232,
+        "sky_blocked_fraction": 0.1622,
+        "slope_deg": 21.42,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -171.78496,
+          52.51284
+        ]
+      },
+      "properties": {
+        "row": 650,
+        "col": 94,
+        "sky_blocked_fraction": 0.1475,
+        "slope_deg": 2.93,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -164.34045,
+          56.59552
+        ]
+      },
+      "properties": {
+        "row": 166,
+        "col": 673,
+        "sky_blocked_fraction": 0.1414,
+        "slope_deg": 18.01,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.10166,
+          44.3559
+        ]
+      },
+      "properties": {
+        "row": 1617,
+        "col": 1236,
+        "sky_blocked_fraction": 0.1362,
+        "slope_deg": 18.63,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -164.40474,
+          56.60396
+        ]
+      },
+      "properties": {
+        "row": 165,
+        "col": 668,
+        "sky_blocked_fraction": 0.1362,
+        "slope_deg": 14.34,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -172.1064,
+          40.2226
+        ]
+      },
+      "properties": {
+        "row": 2107,
+        "col": 69,
+        "sky_blocked_fraction": 0.1348,
+        "slope_deg": 5.47,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -164.2633,
+          56.59552
+        ]
+      },
+      "properties": {
+        "row": 166,
+        "col": 679,
+        "sky_blocked_fraction": 0.1341,
+        "slope_deg": 11.57,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -163.98044,
+          56.663
+        ]
+      },
+      "properties": {
+        "row": 158,
+        "col": 701,
+        "sky_blocked_fraction": 0.1269,
+        "slope_deg": 16.75,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.03737,
+          44.32216
+        ]
+      },
+      "properties": {
+        "row": 1621,
+        "col": 1241,
+        "sky_blocked_fraction": 0.1257,
+        "slope_deg": 17.26,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -160.65034,
+          52.47066
+        ]
+      },
+      "properties": {
+        "row": 655,
+        "col": 960,
+        "sky_blocked_fraction": 0.1256,
+        "slope_deg": 17.63,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -164.09616,
+          56.59552
+        ]
+      },
+      "properties": {
+        "row": 166,
+        "col": 692,
+        "sky_blocked_fraction": 0.1238,
+        "slope_deg": 15.04,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -170.01062,
+          56.32559
+        ]
+      },
+      "properties": {
+        "row": 198,
+        "col": 232,
+        "sky_blocked_fraction": 0.1185,
+        "slope_deg": 2.13,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -172.64642,
+          40.25634
+        ]
+      },
+      "properties": {
+        "row": 2103,
+        "col": 27,
+        "sky_blocked_fraction": 0.1163,
+        "slope_deg": 16.51,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -164.16044,
+          56.58709
+        ]
+      },
+      "properties": {
+        "row": 167,
+        "col": 687,
+        "sky_blocked_fraction": 0.1163,
+        "slope_deg": 10.36,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -163.95472,
+          56.76423
+        ]
+      },
+      "properties": {
+        "row": 146,
+        "col": 703,
+        "sky_blocked_fraction": 0.1131,
+        "slope_deg": 17.09,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -170.39635,
+          40.93117
+        ]
+      },
+      "properties": {
+        "row": 2023,
+        "col": 202,
+        "sky_blocked_fraction": 0.1122,
+        "slope_deg": 13.25,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -164.48188,
+          56.78953
+        ]
+      },
+      "properties": {
+        "row": 143,
+        "col": 662,
+        "sky_blocked_fraction": 0.1119,
+        "slope_deg": 12.97,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -160.95892,
+          52.47909
+        ]
+      },
+      "properties": {
+        "row": 654,
+        "col": 936,
+        "sky_blocked_fraction": 0.1119,
+        "slope_deg": 15.32,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -170.37063,
+          40.84681
+        ]
+      },
+      "properties": {
+        "row": 2033,
+        "col": 204,
+        "sky_blocked_fraction": 0.1097,
+        "slope_deg": 14.04,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -172.47927,
+          43.96787
+        ]
+      },
+      "properties": {
+        "row": 1663,
+        "col": 40,
+        "sky_blocked_fraction": 0.1091,
+        "slope_deg": 11.3,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -170.1392,
+          40.45035
+        ]
+      },
+      "properties": {
+        "row": 2080,
+        "col": 222,
+        "sky_blocked_fraction": 0.1076,
+        "slope_deg": 14.24,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.41918,
+          41.26014
+        ]
+      },
+      "properties": {
+        "row": 1984,
+        "col": 278,
+        "sky_blocked_fraction": 0.1054,
+        "slope_deg": 15.19,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -172.78785,
+          57.54028
+        ]
+      },
+      "properties": {
+        "row": 54,
+        "col": 16,
+        "sky_blocked_fraction": 0.1049,
+        "slope_deg": 8.7,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -168.67344,
+          40.54314
+        ]
+      },
+      "properties": {
+        "row": 2069,
+        "col": 336,
+        "sky_blocked_fraction": 0.1037,
+        "slope_deg": 15.37,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -160.67605,
+          52.19229
+        ]
+      },
+      "properties": {
+        "row": 688,
+        "col": 958,
+        "sky_blocked_fraction": 0.1031,
+        "slope_deg": 11.47,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -160.89463,
+          52.18386
+        ]
+      },
+      "properties": {
+        "row": 689,
+        "col": 941,
+        "sky_blocked_fraction": 0.1028,
+        "slope_deg": 12.9,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -160.77891,
+          52.18386
+        ]
+      },
+      "properties": {
+        "row": 689,
+        "col": 950,
+        "sky_blocked_fraction": 0.1,
+        "slope_deg": 9.68,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.48346,
+          40.25634
+        ]
+      },
+      "properties": {
+        "row": 2103,
+        "col": 273,
+        "sky_blocked_fraction": 0.0997,
+        "slope_deg": 17.38,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -172.85214,
+          57.54028
+        ]
+      },
+      "properties": {
+        "row": 54,
+        "col": 11,
+        "sky_blocked_fraction": 0.0993,
+        "slope_deg": 9.35,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -164.41759,
+          56.84015
+        ]
+      },
+      "properties": {
+        "row": 137,
+        "col": 667,
+        "sky_blocked_fraction": 0.0981,
+        "slope_deg": 11.86,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.27774,
+          40.63593
+        ]
+      },
+      "properties": {
+        "row": 2058,
+        "col": 289,
+        "sky_blocked_fraction": 0.0977,
+        "slope_deg": 12.3,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.31632,
+          40.06233
+        ]
+      },
+      "properties": {
+        "row": 2126,
+        "col": 286,
+        "sky_blocked_fraction": 0.0976,
+        "slope_deg": 13.05,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -167.58055,
+          40.27321
+        ]
+      },
+      "properties": {
+        "row": 2101,
+        "col": 421,
+        "sky_blocked_fraction": 0.0946,
+        "slope_deg": 12.06,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -160.56033,
+          52.43692
+        ]
+      },
+      "properties": {
+        "row": 659,
+        "col": 967,
+        "sky_blocked_fraction": 0.0933,
+        "slope_deg": 12.97,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -167.46483,
+          40.29008
+        ]
+      },
+      "properties": {
+        "row": 2099,
+        "col": 430,
+        "sky_blocked_fraction": 0.0927,
+        "slope_deg": 12.45,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.43203,
+          41.41198
+        ]
+      },
+      "properties": {
+        "row": 1966,
+        "col": 277,
+        "sky_blocked_fraction": 0.0925,
+        "slope_deg": 12.09,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -169.70204,
+          41.15048
+        ]
+      },
+      "properties": {
+        "row": 1997,
+        "col": 256,
+        "sky_blocked_fraction": 0.0911,
+        "slope_deg": 9.8,
+        "kind": "unverified_terrain_obstruction_candidate",
+        "note": "DEM obstruction maximum; shelter, accessibility and radiation protection are unverified.",
+        "verified_shelter": false,
+        "radiation_protection_validated": false
+      }
+    }
+  ]
+}
