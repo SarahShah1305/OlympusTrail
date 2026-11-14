@@ -1,82 +1,62 @@
-import { useCallback, useEffect, useState } from 'react'
-import { getSites, planRoute, sendChat } from './api/client'
-import { config, layerDefinitions } from './config'
+import { useEffect, useRef, useState } from 'react'
+import { getSites, planRoute } from './api/client'
+import { normalizeRoute } from './api/contract'
+import { layerDefinitions } from './config'
 import AskPanel from './components/AskPanel'
 import LayerPanel from './components/LayerPanel'
 import MapView from './components/MapView'
 import MissionPanel from './components/MissionPanel'
 import TopBar from './components/TopBar'
 
-const initialMessages = [
-  {
-    id: 'welcome',
-    role: 'assistant',
-    text: 'I can help compare candidate sites or check a route against its oxygen budget. Ask a question to get started.',
-  },
-]
-
-function makeMessage(role, text) {
-  return { id: `${Date.now()}-${Math.random()}`, role, text }
-}
-
 export default function App() {
   const [mode, setMode] = useState('sites')
-  const [mobilePanel, setMobilePanel] = useState('map')
-  const [overlayOpacity, setOverlayOpacity] = useState(0.65)
+  const [mobilePanel, setMobilePanel] = useState('layers')
+  const [sourceMode, setSourceMode] = useState('live')
+  const [overlayOpacity, setOverlayOpacity] = useState(0.6)
   const [activeLayers, setActiveLayers] = useState(
-    Object.fromEntries(
-      layerDefinitions.map((layer) => [
-        layer.id,
-        layer.id === 'slope' || layer.id === 'ice',
-      ]),
-    ),
+    Object.fromEntries(layerDefinitions.map((l) => [l.id, l.id === 'ice'])),
   )
   const [layerMetadata, setLayerMetadata] = useState(null)
   const [layerMetadataError, setLayerMetadataError] = useState('')
   const [sites, setSites] = useState([])
   const [sitesLoading, setSitesLoading] = useState(true)
   const [sitesError, setSitesError] = useState('')
+  const [retry, setRetry] = useState(0)
   const [start, setStart] = useState(null)
   const [goal, setGoal] = useState(null)
+  const [goalType, setGoalType] = useState('ice')
+  const [editPoint, setEditPoint] = useState(null)
   const [oxygenHours, setOxygenHours] = useState('4')
+  const [batteryWh, setBatteryWh] = useState('1000')
+  const [localTimeH, setLocalTimeH] = useState('6')
   const [avoid, setAvoid] = useState([])
   const [route, setRoute] = useState(null)
-  const [askRoute, setAskRoute] = useState(null)
   const [routeLoading, setRouteLoading] = useState(false)
   const [routeError, setRouteError] = useState('')
-  const [messages, setMessages] = useState(initialMessages)
-  const [chatLoading, setChatLoading] = useState(false)
-  const [chatError, setChatError] = useState('')
   const [selectedSite, setSelectedSite] = useState(null)
-
+  const generation = useRef(0)
+  const workspaceRef = useRef(null)
   useEffect(() => {
-    let active = true
     fetch(`${import.meta.env.BASE_URL}layers/layers.json`)
-      .then((response) => {
-        if (!response.ok) throw new Error(`Layer metadata request failed (${response.status}).`)
-        return response.json()
+      .then((r) => {
+        if (!r.ok) throw Error()
+        return r.json()
       })
-      .then((metadata) => {
-        if (active) setLayerMetadata(metadata)
-      })
-      .catch((error) => {
-        console.error('Unable to load source layer metadata.', error)
-        if (active) setLayerMetadataError('Source layer metadata could not be loaded.')
-      })
-    return () => {
-      active = false
-    }
+      .then(setLayerMetadata)
+      .catch(() =>
+        setLayerMetadataError(
+          'Map overlays are unavailable. You can still use the planner.',
+        ),
+      )
   }, [])
-
   useEffect(() => {
     let active = true
-    getSites()
-      .then((response) => {
-        if (active) setSites(response.sites || [])
+    getSites(sourceMode)
+      .then((data) => {
+        if (active) setSites(data.sites)
       })
       .catch((error) => {
-        console.error('Unable to load candidate sites.', error)
-        if (active) setSitesError('Candidate sites could not be loaded.')
+        if (active) setSitesError(error.message)
       })
       .finally(() => {
         if (active) setSitesLoading(false)
@@ -84,108 +64,107 @@ export default function App() {
     return () => {
       active = false
     }
-  }, [])
-
-  const chooseMode = (nextMode) => {
-    setMode(nextMode)
-    if (nextMode === 'ask') setMobilePanel('mission')
-    if (nextMode === 'route') setMobilePanel('map')
-  }
-
-  const handleMapClick = (point) => {
-    setAskRoute(null)
-    if (!start || goal) {
-      setStart({ lat: point.lat, lng: point.lng })
-      setGoal(null)
-      setRoute(null)
-    } else {
-      setGoal({ lat: point.lat, lng: point.lng })
-    }
-  }
-
-  const handleStartChange = (point) => {
-    setStart(point)
+  }, [sourceMode, retry])
+  function invalidate() {
+    generation.current++
     setRoute(null)
-    setAskRoute(null)
+    setRouteError('')
+    setRouteLoading(false)
   }
-  const handleGoalChange = (point) => {
-    setGoal(point)
-    setRoute(null)
-    setAskRoute(null)
+  function changeSource(next) {
+    invalidate()
+    setSourceMode(next)
+    setSitesLoading(true)
+    setSitesError('')
+    setSites([])
+    setStart(null)
+    setGoal(null)
+    setSelectedSite(null)
+    setEditPoint(null)
   }
-
-  const handleRoute = (result) => {
-    setAskRoute(result)
-    setRoute(null)
+  function chooseMode(next) {
+    setMode(next)
+    setMobilePanel(next === 'sites' ? 'layers' : 'mission')
+    workspaceRef.current?.scrollIntoView({ block: 'start' })
   }
-
-  const getMapStart = () => {
-    if (!start || !Number.isFinite(start.lat) || !Number.isFinite(start.lng)) return null
-    const [[minLat, minLng], [maxLat, maxLng]] = config.region.bounds
-    if (start.lat < minLat || start.lat > maxLat || start.lng < minLng || start.lng > maxLng) return null
-    return [start.lat, start.lng]
+  function useSite(site) {
+    invalidate()
+    setStart({ lat: site.lat, lng: site.lng, name: site.name })
+    setGoal(null)
+    setSelectedSite(site)
+    setEditPoint(null)
+    chooseMode('route')
   }
-
-  const handlePlanRoute = async () => {
-    if (!start || !goal) return
+  function pointChange(which, point) {
+    invalidate()
+    ;(which === 'start' ? setStart : setGoal)({
+      lat: point.lat,
+      lng: point.lng,
+    })
+    setEditPoint(null)
+  }
+  function change(setter, value) {
+    invalidate()
+    setter(value)
+  }
+  async function calculate() {
+    if (routeLoading || !start || (goalType === 'manual' && !goal)) return
+    const current = ++generation.current
     setRouteLoading(true)
     setRouteError('')
-    setAskRoute(null)
     try {
       const result = await planRoute({
+        sourceMode,
         start,
         goal,
-        oxygenHours: Number(oxygenHours),
+        goalType,
+        oxygenHours,
+        batteryWh,
+        localTimeH,
         avoid,
       })
-      setRoute(result)
-    } catch (error) {
-      console.error('Unable to plan route.', error)
-      setRouteError('The route planner could not complete this request. Please try again.')
-    } finally {
-      setRouteLoading(false)
-    }
-  }
-
-  const handleSendMessage = useCallback(async (text) => {
-    const question = text.trim()
-    if (!question) return
-    setMessages((current) => [...current, makeMessage('user', question)])
-    setChatLoading(true)
-    setChatError('')
-    try {
-      const fallbackStart = sites[0] || { name: 'Point A', ...config.region, lat: config.region.center[0] - 0.04, lng: config.region.center[1] - 0.04 }
-      const fallbackGoal = sites[1] || { name: 'Point B', lat: config.region.center[0] + 0.04, lng: config.region.center[1] + 0.04 }
-      const response = await sendChat(question, {
-        start: start || fallbackStart,
-        goal: goal || fallbackGoal,
-        oxygenHours: Number(oxygenHours),
-        avoid,
-        sites,
-      })
-      setMessages((current) => [...current, makeMessage('assistant', response.reply)])
-      if (response.route) {
-        if (!start) setStart(response.route.path?.length ? { lat: response.route.path[0][0], lng: response.route.path[0][1] } : fallbackStart)
-        if (!goal) setGoal(response.route.path?.length ? { lat: response.route.path.at(-1)[0], lng: response.route.path.at(-1)[1] } : fallbackGoal)
-        setRoute(response.route)
+      if (generation.current === current) {
+        setRoute(result)
         setMode('route')
       }
     } catch (error) {
-      console.error('Unable to send map question.', error)
-      setChatError('The map guide could not answer. Check the connection and retry.')
+      if (generation.current === current) setRouteError(error.message)
     } finally {
-      setChatLoading(false)
+      if (generation.current === current) setRouteLoading(false)
     }
-  }, [sites, start, goal, oxygenHours, avoid])
-
-  const toggleLayer = (id) => {
-    setActiveLayers((current) => ({ ...current, [id]: !current[id] }))
   }
-
-  const toggleAvoid = (id) => {
-    setAvoid((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id])
+  function guideRoute(result) {
+    if (!result) return
+    invalidate()
+    const planned = result.planner
+      ? normalizeRoute(result.planner)
+      : { ...result, sourceMode: 'live' }
+    setRoute(planned)
+    if (planned.path?.length)
+      setStart({
+        lat: planned.path[0][0],
+        lng: planned.path[0][1],
+        name: 'Guide starting point',
+      })
+    if (planned.budget) {
+      setOxygenHours(String(planned.budget.oxygen_hours))
+      setBatteryWh(String(planned.budget.battery_wh))
+    }
+    if (planned.request) {
+      setLocalTimeH(String(planned.request.local_time_h))
+      setAvoid(planned.request.avoid || [])
+      setGoalType(planned.request.goal_type ? 'ice' : 'manual')
+    }
+    if (planned.route?.destination)
+      setGoal({
+        lat: planned.route.destination.lat,
+        lng:
+          planned.route.destination.lon > 180
+            ? planned.route.destination.lon - 360
+            : planned.route.destination.lon,
+      })
+    setMode('route')
   }
-
   return (
     <div className={`app-shell mobile-view-${mobilePanel}`}>
       <TopBar
@@ -194,10 +173,83 @@ export default function App() {
         mobilePanel={mobilePanel}
         onMobilePanelChange={setMobilePanel}
       />
-      <main className="workspace">
+      <section className="mission-intro" aria-labelledby="purpose-title">
+        <div>
+          <p className="eyebrow">Explore a possible human mission on Mars</p>
+          <h1 id="purpose-title">
+            Choose a base. Reach the ice. Make it back.
+          </h1>
+          <p>
+            Compare possible base locations in Arcadia Planitia, a Mars region
+            with evidence of shallow subsurface ice. Then check a walking round
+            trip against oxygen and battery limits.
+          </p>
+        </div>
+        <div className="intro-actions">
+          <button
+            className="primary-button"
+            onClick={() => chooseMode('sites')}
+          >
+            1. Choose a starting base
+          </button>
+          <button
+            className="secondary-button"
+            onClick={() => {
+              chooseMode('route')
+              setEditPoint('start')
+              setMobilePanel('map')
+            }}
+          >
+            Explore the map
+          </button>
+        </div>
+      </section>
+      <div
+        className={`source-banner ${sourceMode === 'demo' ? 'is-demo' : ''}`}
+        role="status"
+      >
+        <strong>
+          {sourceMode === 'demo'
+            ? 'SAMPLE DEMONSTRATION'
+            : 'NASA observations + scientific models'}
+        </strong>
+        <span>
+          {sourceMode === 'demo'
+            ? 'Example sites and simple supply calculations; no terrain route or verified ice target.'
+            : 'Hackathon planning estimates, not validated human mission guidance. Failed requests never switch to samples.'}
+        </span>
+        <button
+          type="button"
+          onClick={() => changeSource(sourceMode === 'live' ? 'demo' : 'live')}
+        >
+          {sourceMode === 'live' ? 'Try sample mode' : 'Use real planner'}
+        </button>
+        {sitesError && (
+          <button
+            type="button"
+            onClick={() => {
+              setSitesLoading(true)
+              setSitesError('')
+              setRetry((n) => n + 1)
+            }}
+          >
+            Retry connection
+          </button>
+        )}
+      </div>
+      <main className="workspace" ref={workspaceRef}>
         <LayerPanel
           activeLayers={activeLayers}
-          onToggle={toggleLayer}
+          onToggle={(id) =>
+            setActiveLayers((previous) =>
+              Object.fromEntries(
+                layerDefinitions.map((l) => [
+                  l.id,
+                  l.id === id && !previous[id],
+                ]),
+              ),
+            )
+          }
           opacity={overlayOpacity}
           onOpacityChange={setOverlayOpacity}
           layerMetadata={layerMetadata}
@@ -205,50 +257,81 @@ export default function App() {
           sites={sites}
           loading={sitesLoading}
           error={sitesError}
-          onSelectSite={(site) => {
-            setSelectedSite(site)
-            setMode('sites')
-            setMobilePanel('map')
-          }}
+          selectedSite={selectedSite}
+          onSelectSite={setSelectedSite}
+          onUseSite={useSite}
+          sourceMode={sourceMode}
         />
         <MapView
-          mode={mode}
+          mode={editPoint ? 'route' : 'sites'}
           sites={sites}
           activeLayers={activeLayers}
           start={start}
-          goal={goal}
-          onMapClick={handleMapClick}
-          onStartChange={handleStartChange}
-          onGoalChange={handleGoalChange}
-          route={askRoute ? { path: askRoute.path } : route}
-          askRoutePath={askRoute?.path}
+          goal={goalType === 'manual' ? goal : null}
+          onMapClick={(point) => pointChange(editPoint || 'start', point)}
+          onStartChange={(point) => pointChange('start', point)}
+          onGoalChange={(point) => pointChange('goal', point)}
+          route={route}
+          askRoutePath={route?.path}
           selectedSite={selectedSite}
           layerMetadata={layerMetadata}
           overlayOpacity={overlayOpacity}
+          onSelectSite={setSelectedSite}
+          onUseSite={useSite}
+          sourceMode={sourceMode}
+          editPoint={editPoint}
         />
-        {mode === 'ask' ? (
-          <aside className="side-panel right-panel" aria-label="Ask the map">
-            <AskPanel onRoute={handleRoute} getMapStart={getMapStart} />
-          </aside>
-        ) : (
-          <MissionPanel
-            mode={mode}
-            route={route}
-            start={start}
-            goal={goal}
-            oxygenHours={oxygenHours}
-            onOxygenChange={setOxygenHours}
-            avoid={avoid}
-            onAvoidToggle={toggleAvoid}
-            onPlanRoute={handlePlanRoute}
-            routeLoading={routeLoading}
-            routeError={routeError}
-            messages={messages}
-            onSendMessage={handleSendMessage}
-            chatLoading={chatLoading}
-            chatError={chatError}
+        <aside
+          className="side-panel right-panel"
+          aria-label="Plan and review your mission"
+        >
+          {mode !== 'ask' && (
+            <MissionPanel
+              start={start}
+              goal={goal}
+              goalType={goalType}
+              onGoalTypeChange={(v) => change(setGoalType, v)}
+              oxygenHours={oxygenHours}
+              onOxygenChange={(v) => change(setOxygenHours, v)}
+              batteryWh={batteryWh}
+              onBatteryChange={(v) => change(setBatteryWh, v)}
+              localTimeH={localTimeH}
+              onTimeChange={(v) => change(setLocalTimeH, v)}
+              avoid={avoid}
+              onAvoidToggle={(id) =>
+                change(
+                  setAvoid,
+                  avoid.includes(id)
+                    ? avoid.filter((v) => v !== id)
+                    : [...avoid, id],
+                )
+              }
+              onSetPoint={pointChange}
+              onEditPoint={(which) => {
+                setEditPoint(which)
+                setMobilePanel('map')
+              }}
+              onReset={() => {
+                invalidate()
+                setStart(null)
+                setGoal(null)
+                setEditPoint(null)
+                setSelectedSite(null)
+              }}
+              onPlanRoute={calculate}
+              route={route}
+              routeLoading={routeLoading}
+              routeError={routeError}
+              sourceMode={sourceMode}
+            />
+          )}
+          <AskPanel
+            key={sourceMode}
+            onRoute={guideRoute}
+            getMapStart={() => (start ? [start.lat, start.lng] : null)}
+            sourceMode={sourceMode}
           />
-        )}
+        </aside>
       </main>
     </div>
   )

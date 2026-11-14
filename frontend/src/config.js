@@ -1,6 +1,4 @@
-export const AI_API_URL =
-  import.meta.env.VITE_AI_API_URL ||
-  (import.meta.env.DEV ? 'http://localhost:8001' : '')
+export const AI_API_URL = import.meta.env.VITE_AI_API_URL || ''
 
 export const config = {
   region: {
@@ -12,7 +10,7 @@ export const config = {
     maxZoom: 8,
     bounds: [
       [40, -173],
-      [52, -157],
+      [58, -157],
     ],
   },
   map: {
@@ -33,4 +31,3 @@ export const layerDefinitions = [
   { id: 'temperature', label: 'Temperature' },
   { id: 'sunlight', label: 'Sunlight' },
 ]
-

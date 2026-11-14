@@ -4,73 +4,116 @@ import { isVoiceSupported, startListening } from '../voice'
 
 const API_URL = config.AI_API_URL
 const EXAMPLE_QUESTIONS = [
-  "What's the safest route with 4 hours of oxygen?",
-  'Take me to the nearest ice.',
-  'Where should we build the base?',
+  'Plan a route that fits 4 hours of oxygen.',
+  'How can I reach the nearest ice?',
+  'Compare areas for a possible base.',
 ]
 
-const compactButtonStyle = {
+const submitButtonStyle = {
   width: 'auto',
-  minHeight: 31,
-  padding: '0 11px',
-  fontSize: 10,
+  minHeight: 40,
+  padding: '0 14px',
+  fontSize: 14,
   whiteSpace: 'nowrap',
 }
 
-export default function AskPanel({ onRoute, getMapStart }) {
+const statusLabels = {
+  unchecked: 'Not checked',
+  checking: 'Checking…',
+  connected: 'Connected',
+  unavailable: 'Unavailable',
+  demo: 'Demo mode',
+}
+
+export default function AskPanel({
+  onRoute,
+  getMapStart,
+  sourceMode = 'live',
+}) {
   const [question, setQuestion] = useState('')
   const [loading, setLoading] = useState(false)
   const [answer, setAnswer] = useState(null)
   const [error, setError] = useState('')
   const [voiceError, setVoiceError] = useState('')
   const [listening, setListening] = useState(false)
+  const [connectionState, setConnectionState] = useState('unchecked')
   const stopListeningRef = useRef(null)
+  const requestVersion = useRef(0)
+  const voiceSupported = isVoiceSupported()
+  const isDemo = sourceMode === 'demo'
 
-  useEffect(() => () => stopListeningRef.current?.(), [])
+  useEffect(
+    () => () => {
+      requestVersion.current++
+      stopListeningRef.current?.()
+    },
+    [],
+  )
 
   async function submitQuestion(value = question) {
     const text = value.trim()
     if (!text || loading) return
 
     setQuestion(text)
-    setLoading(true)
     setError('')
     setVoiceError('')
-    setAnswer(null)
+
+    if (isDemo) {
+      setConnectionState('demo')
+      setError(
+        'The guide needs a live planner. You can still build a route with the manual planner.',
+      )
+      return
+    }
+
+    const version = ++requestVersion.current
+    setLoading(true)
+    setConnectionState('checking')
 
     try {
-      const apiBase = API_URL ? API_URL.replace(/\/$/, '') : ''
-      const response = await fetch(`${apiBase}/ask`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: text,
-          map_start: (() => {
-            const mapStart = getMapStart?.()
-            return mapStart ? { lon: mapStart[1], lat: mapStart[0] } : null
-          })(),
-        }),
-      })
-      if (!response.ok) throw new Error('AI guide request failed')
+      const mapStart = getMapStart?.()
+      const response = await fetch(
+        `${API_URL ? API_URL.replace(/\/$/, '') : ''}/ask`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(60000),
+          body: JSON.stringify({
+            question: text,
+            map_start: mapStart ? { lon: mapStart[1], lat: mapStart[0] } : null,
+          }),
+        },
+      )
+      if (!response.ok) throw new Error('Planner request failed')
 
       const data = await response.json()
+      if (version !== requestVersion.current) return
       setAnswer(data)
-      const route = data.route
-      if (route?.status === 'ok' && Array.isArray(route.path) && route.path.length > 0) {
+      setConnectionState(
+        data.route?.status === 'error' ? 'unavailable' : 'connected',
+      )
+
+      const route = data?.route
+      if (
+        route?.status === 'ok' &&
+        Array.isArray(route.path) &&
+        route.path.length > 0
+      ) {
         onRoute?.(route)
-      } else {
-        onRoute?.(null)
       }
     } catch {
-      setAnswer(null)
-      setError('I could not reach the AI guide. Please check that it is running.')
-      onRoute?.(null)
+      if (version !== requestVersion.current) return
+      setConnectionState('unavailable')
+      setError(
+        'The live planner could not answer. Use the manual route planner or try again.',
+      )
     } finally {
-      setLoading(false)
+      if (version === requestVersion.current) setLoading(false)
     }
   }
 
   function toggleListening() {
+    if (!voiceSupported) return
     setVoiceError('')
     if (listening) {
       stopListeningRef.current?.()
@@ -83,7 +126,9 @@ export default function AskPanel({ onRoute, getMapStart }) {
     stopListeningRef.current = startListening({
       onResult: (spokenText) => {
         setQuestion(spokenText.slice(0, 500))
-        void submitQuestion(spokenText.slice(0, 500))
+        setVoiceError(
+          'Review the transcription, then press Send when you are ready.',
+        )
       },
       onError: (message) => {
         setVoiceError(message)
@@ -99,10 +144,10 @@ export default function AskPanel({ onRoute, getMapStart }) {
 
   function chooseExample(example) {
     setQuestion(example)
-    void submitQuestion(example)
+    setError('')
   }
 
-  const sourceLabel = answer?.source === 'llm' ? 'AI' : 'Offline guide'
+  const sourceLabel = answer?.source === 'llm' ? 'AI guide' : 'Rule-based guide'
 
   return (
     <section className="panel-section chat-section" aria-label="Ask the map">
@@ -111,8 +156,25 @@ export default function AskPanel({ onRoute, getMapStart }) {
           <p className="eyebrow">Mission assistant</p>
           <h2>Ask the map</h2>
         </div>
-        <span className="assistant-dot" title="Map guide ready" />
+        <span
+          role="status"
+          aria-live="polite"
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: 'var(--muted, #5d584e)',
+          }}
+        >
+          {statusLabels[isDemo ? 'demo' : connectionState] ||
+            statusLabels.unchecked}
+        </span>
       </div>
+
+      <p style={{ margin: '8px 0 10px', fontSize: 14, lineHeight: 1.5 }}>
+        {isDemo
+          ? 'The guide needs a live planner in demo mode. Example prompts fill the box, and you can still build a route with the manual planner.'
+          : 'When you press Send, your question and the selected map starting point are sent to the live planner. Without a selected base, the guide uses its configured default starting point, which will appear in the result. Example prompts fill the box; they do not send automatically.'}
+      </p>
 
       <form
         className="chat-form"
@@ -139,8 +201,13 @@ export default function AskPanel({ onRoute, getMapStart }) {
           onClick={toggleListening}
           aria-label={listening ? 'Stop voice input' : 'Start voice input'}
           aria-pressed={listening}
-          title={isVoiceSupported() ? 'Ask using your voice' : 'Voice input is not supported'}
-          style={listening ? { background: 'var(--navy)', color: 'var(--cream)' } : undefined}
+          title={
+            voiceSupported
+              ? 'Transcribe a question for review'
+              : 'Voice input is not supported'
+          }
+          disabled={!voiceSupported || loading}
+          style={{ minWidth: 40, minHeight: 40 }}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="9" y="3" width="6" height="12" rx="3" />
@@ -151,20 +218,36 @@ export default function AskPanel({ onRoute, getMapStart }) {
           type="submit"
           className="primary-button"
           disabled={!question.trim() || loading}
-          style={compactButtonStyle}
+          style={submitButtonStyle}
         >
-          Send
+          {loading ? 'Sending…' : 'Send'}
         </button>
       </form>
 
-      {listening && <p className="eyebrow" role="status" style={{ marginTop: 7 }}>Listening…</p>}
-      {loading && <p className="eyebrow" role="status" style={{ marginTop: 7 }}>Thinking...</p>}
-      {voiceError && <p className="inline-error" role="alert">{voiceError}</p>}
-      {error && <p className="inline-error" role="alert">{error}</p>}
+      {listening && (
+        <p role="status" style={{ marginTop: 8, fontSize: 14 }}>
+          Listening…
+        </p>
+      )}
+      {loading && (
+        <p role="status" style={{ marginTop: 8, fontSize: 14 }}>
+          Waiting for the planner…
+        </p>
+      )}
+      {voiceError && (
+        <p role="status" style={{ marginTop: 8, fontSize: 14 }}>
+          {voiceError}
+        </p>
+      )}
+      {error && (
+        <p className="inline-error" role="alert" style={{ fontSize: 14 }}>
+          {error}
+        </p>
+      )}
 
       <div
         aria-label="Example questions"
-        style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 9 }}
+        style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}
       >
         {EXAMPLE_QUESTIONS.map((example) => (
           <button
@@ -173,12 +256,14 @@ export default function AskPanel({ onRoute, getMapStart }) {
             onClick={() => chooseExample(example)}
             disabled={loading}
             style={{
-              padding: '4px 7px',
+              minHeight: 38,
+              padding: '6px 10px',
               border: '1px solid var(--border)',
               borderRadius: 5,
               background: 'var(--cream-chat)',
               color: 'var(--navy)',
-              fontSize: 9,
+              fontSize: 13,
+              lineHeight: 1.35,
               textAlign: 'left',
               cursor: loading ? 'not-allowed' : 'pointer',
             }}
@@ -189,26 +274,73 @@ export default function AskPanel({ onRoute, getMapStart }) {
       </div>
 
       {answer && (
-        <div className="chat-message assistant" style={{ maxWidth: '100%', marginTop: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <span className="message-author" style={{ marginBottom: 0 }}>Map guide</span>
+        <div
+          className="chat-message assistant"
+          style={{ maxWidth: '100%', marginTop: 12 }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+            }}
+          >
+            <span className="message-author" style={{ marginBottom: 0 }}>
+              Map guide
+            </span>
             <span
               style={{
-                padding: '2px 6px',
+                padding: '3px 8px',
                 borderRadius: 9,
                 background: 'var(--coral)',
                 color: 'var(--navy)',
-                fontSize: 9,
+                fontSize: 12,
                 fontWeight: 700,
               }}
             >
               {sourceLabel}
             </span>
           </div>
-          <p style={{ marginTop: 7 }}>{answer.explanation}</p>
+          {answer.route?.status === 'ok' ? (
+            <>
+              <p>
+                The planner found a round trip within its configured limits.
+                Review the distance, supplies, scenario time and reserve in the
+                mission result before comparing options.
+              </p>
+              <details>
+                <summary>How the guide interpreted your request</summary>
+                <p>
+                  Oxygen:{' '}
+                  {answer.route.planner?.budget?.oxygen_hours ?? 'not supplied'}{' '}
+                  Earth hours. Battery:{' '}
+                  {answer.route.planner?.budget?.battery_wh ?? 'not supplied'}{' '}
+                  Wh. These are the guide’s interpreted settings; they replace
+                  the manual form only when a route succeeds.
+                </p>
+                <p style={{ fontSize: 14, lineHeight: 1.55 }}>
+                  {answer.explanation}
+                </p>
+              </details>
+            </>
+          ) : (
+            <p style={{ marginTop: 8, fontSize: 14, lineHeight: 1.55 }}>
+              {answer.explanation}
+            </p>
+          )}
           {answer.warnings?.length > 0 && (
-            <ul style={{ margin: '6px 0 0', paddingLeft: 16, fontSize: 9, lineHeight: 1.45 }}>
-              {answer.warnings.map((warning, index) => <li key={`${warning}-${index}`}>{warning}</li>)}
+            <ul
+              style={{
+                margin: '8px 0 0',
+                paddingLeft: 20,
+                fontSize: 13,
+                lineHeight: 1.5,
+              }}
+            >
+              {answer.warnings.map((warning, index) => (
+                <li key={`${warning}-${index}`}>{warning}</li>
+              ))}
             </ul>
           )}
         </div>

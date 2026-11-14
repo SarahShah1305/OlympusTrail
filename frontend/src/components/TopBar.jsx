@@ -1,36 +1,57 @@
 const modes = [
-  { id: 'sites', label: 'Best site' },
-  { id: 'route', label: 'Route' },
+  { id: 'sites', label: 'Choose base' },
+  { id: 'route', label: 'Plan & review' },
   { id: 'ask', label: 'Ask the map' },
 ]
 
-export default function TopBar({ mode, onModeChange, mobilePanel, onMobilePanelChange }) {
+export default function TopBar({
+  mode,
+  onModeChange,
+  mobilePanel,
+  onMobilePanelChange,
+}) {
   return (
     <header className="topbar">
       <div className="topbar-main">
-        <a className="brand" href="#" aria-label="OlympusTrail home" onClick={(event) => event.preventDefault()}>
-          <span className="brand-mark" aria-hidden="true"><i /><i /><i /></span>
-          <span>OlympusTrail</span>
+        <a
+          className="brand"
+          href="#purpose-title"
+          aria-label="OlympusTrail home"
+        >
+          <span className="brand-mark" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span>
+            OlympusTrail
+            <small className="brand-subtitle">Mars mission planner</small>
+          </span>
         </a>
-        <nav className="mode-nav" aria-label="Mission steps">
+        <nav className="mode-nav" aria-label="Mission tools">
           {modes.map((item, index) => (
             <button
               type="button"
               key={item.id}
               className={`mode-pill ${mode === item.id ? 'is-active' : ''}`}
-              aria-current={mode === item.id ? 'step' : undefined}
+              aria-current={mode === item.id ? 'page' : undefined}
               onClick={() => onModeChange(item.id)}
             >
-              <span className="mode-index">0{index + 1}</span> {item.label}
+              <span className="mode-index">
+                {index < 2 ? `0${index + 1}` : '?'}
+              </span>{' '}
+              {item.label}
             </button>
           ))}
         </nav>
-        <span className="mission-region">Arcadia Planitia <span>·</span> Mars</span>
+        <span className="mission-region">
+          Arcadia Planitia <span> / </span> Mars
+        </span>
       </div>
       <nav className="mobile-tabs" aria-label="Mobile panels">
         {[
           ['map', 'Map'],
-          ['layers', 'Layers'],
+          ['layers', 'Bases & layers'],
           ['mission', 'Mission'],
         ].map(([id, label]) => (
           <button
