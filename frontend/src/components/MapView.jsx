@@ -54,6 +54,14 @@ function GridBounds({ bounds }) {
   return null
 }
 
+function RouteFocus({ path }) {
+  const map = useMap()
+  useEffect(() => {
+    if (path?.length > 1) map.fitBounds(path, { padding: [24, 24] })
+  }, [map, path])
+  return null
+}
+
 function makeMarkerIcon(label, kind, rank) {
   return L.divIcon({
     className: 'map-marker-icon',
@@ -118,6 +126,7 @@ export default function MapView({
   onStartChange,
   onGoalChange,
   route,
+  askRoutePath,
   selectedSite,
   layerMetadata,
   overlayOpacity,
@@ -145,6 +154,7 @@ export default function MapView({
           className="leaflet-map"
         >
           <GridBounds bounds={regionBounds} />
+          <RouteFocus path={askRoutePath} />
           {!tileError && (
             <TileLayer
               url={config.map.tileUrl}
