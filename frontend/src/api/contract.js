@@ -1,26 +1,26 @@
 export function routeRequest({
   start,
   goal,
-  goalType = 'ice',
+  goalType = "ice",
   oxygenHours,
   batteryWh,
   localTimeH = 6,
   avoid = [],
 }) {
-  const position = (point) => ({ lat: point.lat, lon: point.lng })
+  const position = (point) => ({ lat: point.lat, lon: point.lng });
   return {
     start: position(start),
-    ...(goalType === 'ice'
-      ? { goal_type: 'ice', min_goal_distance_km: 3 }
+    ...(goalType === "ice"
+      ? { goal_type: "ice", min_goal_distance_km: 3 }
       : { goal: position(goal) }),
     oxygen_hours: Number(oxygenHours),
     battery_wh: Number(batteryWh),
     local_time_h: Number(localTimeH),
     return_to_start: true,
     reserve_fraction: 0.2,
-    mode: 'scenario',
+    mode: "scenario",
     avoid,
-  }
+  };
 }
 export function normalizeSites(data) {
   return {
@@ -41,20 +41,20 @@ export function normalizeSites(data) {
           ([key, weight]) =>
             `${key}: ${Math.round(weight * 100)}% of ranking weight`,
         ),
-        'Radiation shielding is excluded from this ranking.',
+        "Radiation shielding is excluded from this ranking.",
       ],
     })),
-  }
+  };
 }
 export function normalizeRoute(data) {
-  const points = data.route?.geojson?.geometry?.coordinates
+  const points = data.route?.geojson?.geometry?.coordinates;
   const path = points
     ? points.map(([lon, lat]) => [lat, lon > 180 ? lon - 360 : lon])
-    : []
+    : [];
   return {
     ...data,
     path,
-    sourceMode: 'live',
+    sourceMode: "live",
     metrics: data.metrics
       ? {
           ...data.metrics,
@@ -63,5 +63,5 @@ export function normalizeRoute(data) {
             data.budget.battery_wh - data.metrics.battery_wh,
         }
       : null,
-  }
+  };
 }

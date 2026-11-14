@@ -31,7 +31,7 @@ python -m uvicorn ai_guide.main:app --port 8001
 npm run dev --prefix frontend
 ```
 
-Open the address printed by Vite, usually http://localhost:5173. Vite forwards planner requests to port 8000 and guide requests to port 8001. The guide can use its rule-based fallback without an AI key. Optional guide configuration, including provider settings and the explicitly enabled mock mode, is documented in [the guide README](ai_guide/README.md). Keep keys in a local `.env` file and never commit them.
+Open the address printed by Vite, usually http://localhost:5173. Vite forwards planner requests to port 8000 and guide requests to port 8001. The browser smoke test starts Vite automatically; start the planner on port 8000 before running `npm run test:smoke --prefix frontend`. Set `BASE_URL` to target another Vite address. The guide can use its rule-based fallback without an AI key. Optional guide configuration, including provider settings and the explicitly enabled mock mode, is documented in [the guide README](ai_guide/README.md). Keep keys in a local `.env` file and never commit them.
 
 ## How it fits together
 

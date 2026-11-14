@@ -2,6 +2,7 @@
   "region": "Arcadia Planitia, 40\u201358\u00b0N",
   "crs": "EPSG:4326 (reprojected from 500 m equirectangular Mars rasters)",
   "pixel_size_m": 500,
+  "image_format": "WebP with alpha; quality 28 for aspect, 86 for other overlays",
   "bounds_lonlat": [
     -173.0,
     40.0,
@@ -23,7 +24,7 @@
   "layers": [
     {
       "id": "elevation",
-      "image": "elevation.png",
+      "image": "elevation.webp",
       "bounds_latlng": [
         [
           40.0,
@@ -49,15 +50,16 @@
       "source": "MOLA 500 m terrain",
       "source_pixel_m": 500,
       "legend_colors": [
-        "#1B2D52",
-        "#2A4278",
-        "#E9DFCC",
-        "#FF6B5B"
-      ]
+        "#2F174B",
+        "#63418F",
+        "#A879B4",
+        "#F0D5ED"
+      ],
+      "image_quality": 86
     },
     {
       "id": "slope",
-      "image": "slope.png",
+      "image": "slope.webp",
       "bounds_latlng": [
         [
           40.0,
@@ -78,20 +80,21 @@
       "max": 27.56664276123047,
       "units": "degrees",
       "coverage_percent": 100.0,
-      "label": "Slope",
+      "label": "Steepness",
       "description": "Slope derived from the 500 m MOLA grid.",
       "source": "MOLA 500 m terrain",
       "source_pixel_m": 500,
       "legend_colors": [
-        "#1B2D52",
-        "#22386A",
-        "#E9DFCC",
-        "#FF6B5B"
-      ]
+        "#FFF0D2",
+        "#F5B952",
+        "#D87934",
+        "#8F302B"
+      ],
+      "image_quality": 86
     },
     {
       "id": "aspect",
-      "image": "aspect.png",
+      "image": "aspect.webp",
       "bounds_latlng": [
         [
           40.0,
@@ -112,21 +115,23 @@
       "max": 359.9984130859375,
       "units": "degrees clockwise from north",
       "coverage_percent": 100.0,
-      "label": "Aspect",
+      "label": "Slope direction",
       "description": "Downhill bearing from the 500 m MOLA grid; flat-cell bearings are unreliable.",
       "source": "MOLA 500 m terrain",
       "source_pixel_m": 500,
       "legend_colors": [
-        "#1B2D52",
-        "#2A4278",
-        "#E9DFCC",
-        "#FF6B5B",
-        "#1B2D52"
-      ]
+        "#3E1C75",
+        "#165D9D",
+        "#138077",
+        "#B08E23",
+        "#BD503A",
+        "#3E1C75"
+      ],
+      "image_quality": 28
     },
     {
       "id": "ice",
-      "image": "ice.png",
+      "image": "ice.webp",
       "bounds_latlng": [
         [
           40.0,
@@ -147,20 +152,21 @@
       "max": 0.9956623315811157,
       "units": "index (0\u20131)",
       "coverage_percent": 100.0,
-      "label": "Ice consistency",
+      "label": "Ice evidence",
       "description": "SWIM ice consistency index in the upper metre; native source is approximately 3 km.",
       "source": "SWIM, native ~3 km",
       "source_pixel_m": null,
       "legend_colors": [
-        "#1B2D52",
-        "#2A4278",
-        "#E9DFCC",
-        "#FF6B5B"
-      ]
+        "#E0F2EF",
+        "#9DD8D1",
+        "#3AA7A3",
+        "#07585E"
+      ],
+      "image_quality": 86
     },
     {
       "id": "dust",
-      "image": "dust.png",
+      "image": "dust.webp",
       "bounds_latlng": [
         [
           40.0,
@@ -181,20 +187,21 @@
       "max": 0.2746407389640808,
       "units": "optical depth",
       "coverage_percent": 100.0,
-      "label": "Atmospheric dust",
+      "label": "Dust risk",
       "description": "MCD climatology; coarse model data, not a surface hazard map.",
       "source": "MCD v6.2 model",
       "source_pixel_m": null,
       "legend_colors": [
-        "#1B2D52",
-        "#22386A",
-        "#E9DFCC",
-        "#FF6B5B"
-      ]
+        "#E6E6E2",
+        "#B7B7B1",
+        "#806C77",
+        "#402E3A"
+      ],
+      "image_quality": 86
     },
     {
       "id": "temperature",
-      "image": "temperature.png",
+      "image": "temperature.webp",
       "bounds_latlng": [
         [
           40.0,
@@ -215,20 +222,21 @@
       "max": 274.6159973144531,
       "units": "K",
       "coverage_percent": 100.0,
-      "label": "Temperature \u00b7 12h local",
+      "label": "Temperature at local noon",
       "description": "MCD climatology surface temperature; coarse model data, not a local forecast.",
       "source": "MCD v6.2 model",
       "source_pixel_m": null,
       "legend_colors": [
-        "#1B2D52",
-        "#22386A",
-        "#E9DFCC",
-        "#FF6B5B"
-      ]
+        "#3B1459",
+        "#87447A",
+        "#D4685D",
+        "#FFC879"
+      ],
+      "image_quality": 86
     },
     {
       "id": "sunlight",
-      "image": "sunlight.png",
+      "image": "sunlight.webp",
       "bounds_latlng": [
         [
           40.0,
@@ -249,16 +257,17 @@
       "max": 175.57797241210938,
       "units": "W/m\u00b2",
       "coverage_percent": 100.0,
-      "label": "Mean sunlight",
+      "label": "Sunlight",
       "description": "Mean of four local-time MCD model samples; coarse model data.",
       "source": "MCD v6.2 model",
       "source_pixel_m": null,
       "legend_colors": [
-        "#1B2D52",
-        "#22386A",
-        "#E9DFCC",
-        "#FF6B5B"
-      ]
+        "#0B352D",
+        "#28745C",
+        "#75A96C",
+        "#C8DC7E"
+      ],
+      "image_quality": 86
     }
   ]
 }

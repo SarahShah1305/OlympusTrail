@@ -7,9 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
+    "format": "prettier --write \"src/**/*.{js,jsx,css}\" \"tests/**/*.js\" vite.config.js playwright.config.js package.json index.html",
     "preview": "vite preview",
     "test:smoke": "playwright test tests/smoke.spec.js",
-    "test:unit": "node --test src/api/contract.test.js src/mission.test.js"
+    "test:unit": "node --test src/api/contract.test.js src/mission.test.js src/briefing.test.js"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
@@ -23,6 +24,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "oxlint": "^1.90.0",
+    "prettier": "^3.10.1",
     "vite": "^8.3.6"
   }
 }

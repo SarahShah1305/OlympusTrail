@@ -1,9 +1,11 @@
-import { sources } from '../sources'
+import { sources } from "../sources";
 
 export default function SourcesPanel() {
   return (
     <details className="sources-panel">
-      <summary>Sources and caveats <span aria-hidden="true">+</span></summary>
+      <summary>
+        Sources and caveats <span aria-hidden="true">+</span>
+      </summary>
       <ul>
         {sources.map((source) => (
           <li key={source.id}>
@@ -11,15 +13,17 @@ export default function SourcesPanel() {
             <span>{source.organization}</span>
             <p>{source.note}</p>
             <div className="source-links">
-              <a href={source.url} target="_blank" rel="noreferrer">Source</a>
+              <a href={source.url} target="_blank" rel="noreferrer">
+                Source
+              </a>
               {source.downloadUrl && (
                 <a href={source.downloadUrl} target="_blank" rel="noreferrer">
-                  {source.downloadLabel || 'Download'}
+                  {source.downloadLabel || "Download"}
                 </a>
               )}
               {source.archiveUrl && (
                 <a href={source.archiveUrl} target="_blank" rel="noreferrer">
-                  {source.archiveLabel || 'Archive'}
+                  {source.archiveLabel || "Archive"}
                 </a>
               )}
             </div>
@@ -27,5 +31,5 @@ export default function SourcesPanel() {
         ))}
       </ul>
     </details>
-  )
+  );
 }
