@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm ci --prefix frontend && npm run build --prefix frontend",
+  "functions": {
+    "index.py": {
+      "maxDuration": 60,
+      "includeFiles": "data/person1/arcadia_500m/**",
+      "excludeFiles": "{tests/**,scripts/**,scripts_frontend/**,data/person1/sources/**,data/person1/arcadia_500m/sources/**,data/person1_complete/**,data/processed/**,frontend/node_modules/**,frontend/src/**}"
+    }
+  }
+}

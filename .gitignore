@@ -4,3 +4,4 @@ __pycache__/
 .env
 ai_guide/.env
 node_modules/
+.vercel

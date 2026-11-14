@@ -1,7 +1,11 @@
 import { mockPlanRoute, mockSendChat, mockSites } from './mockData'
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-const useMock = (import.meta.env.VITE_USE_MOCK || 'true').toLowerCase() !== 'false'
+const apiUrl =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? 'http://localhost:8000' : '')
+const useMock =
+  (import.meta.env.VITE_USE_MOCK || (import.meta.env.PROD ? 'false' : 'true')).toLowerCase() !==
+  'false'
 
 async function request(path, options = {}, fallback) {
   if (useMock) return fallback()

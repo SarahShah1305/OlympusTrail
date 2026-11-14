@@ -117,7 +117,15 @@ def _mock_route(request: Mapping[str, Any]) -> dict:
 
 def _planner_url() -> str:
     """Return the configured planner base URL without a trailing slash."""
-    return os.getenv("PLANNER_URL", "http://localhost:8000").rstrip("/")
+    configured = os.getenv("PLANNER_URL")
+    if configured:
+        return configured.rstrip("/")
+    # In a single-origin Vercel deployment the guide calls the planner through
+    # the current deployment URL. Local development keeps the localhost default.
+    vercel_url = os.getenv("VERCEL_URL")
+    if vercel_url:
+        return f"https://{vercel_url}".rstrip("/")
+    return "http://localhost:8000"
 
 
 async def call_planner(request: dict) -> dict:

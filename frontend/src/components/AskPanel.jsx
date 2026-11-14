@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as config from '../config'
 import { isVoiceSupported, startListening } from '../voice'
 
-const API_URL = config.AI_API_URL || 'http://localhost:8001'
+const API_URL = config.AI_API_URL
 const EXAMPLE_QUESTIONS = [
   "What's the safest route with 4 hours of oxygen?",
   'Take me to the nearest ice.',
@@ -39,7 +39,8 @@ export default function AskPanel({ onRoute, getMapStart }) {
     setAnswer(null)
 
     try {
-      const response = await fetch(`${API_URL.replace(/\/$/, '')}/ask`, {
+      const apiBase = API_URL ? API_URL.replace(/\/$/, '') : ''
+      const response = await fetch(`${apiBase}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
