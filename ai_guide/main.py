@@ -194,8 +194,19 @@ async def ask(payload: AskPayload) -> dict:
         if parsed.goal_type is None:
             warnings.append("No destination was given, so I assumed the nearest ice.")
 
+        map_start_used = payload.map_start is not None and parsed.start is None
         request = build_route_request(parsed, payload.map_start)
         result = await call_planner(request)
+        if (
+            map_start_used
+            and os.getenv("USE_MOCK", "0").strip() != "1"
+            and result.get("status") in {"infeasible", "search_limit"}
+        ):
+            result = await call_planner(build_route_request(parsed))
+            warnings.append(
+                "No route was found from the map point, so I used the demo start instead. "
+                "The route does not start at point A."
+            )
         if result.get("_mock") is True:
             warnings.append("Using sample data, not live planner results.")
         text, explainer_source = await explain(
