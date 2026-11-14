@@ -1,0 +1,129 @@
+{
+  "request": {
+    "start": {
+      "row": 643,
+      "col": 1226,
+      "lon": null,
+      "lat": null
+    },
+    "goal": null,
+    "goal_type": "ice",
+    "ice_min_consistency": 0.75,
+    "min_goal_distance_km": 3.0,
+    "oxygen_hours": 0.05,
+    "battery_wh": 1000.0,
+    "reserve_fraction": 0.2,
+    "return_to_start": true,
+    "mode": "scenario",
+    "local_time_h": 6,
+    "avoid": [],
+    "weights": {
+      "slope": 0.4,
+      "radiation": 0.2,
+      "temperature": 0.25,
+      "dust": 0.15
+    },
+    "parameters": {
+      "walking_speed_kmh": 3.0,
+      "base_power_w": 100.0,
+      "movement_energy_wh_km": 10.0,
+      "cold_power_w_per_k": 2.0,
+      "cold_reference_k": 230.0,
+      "max_slope_deg": 15.0,
+      "max_dust_optical_depth": 1.0
+    },
+    "max_search_labels": 100000
+  },
+  "data": {
+    "mode": "scenario",
+    "dataset": "arcadia_500m",
+    "grid_spacing_m": 500.0,
+    "scenario": {
+      "id": "mcd62_ls90",
+      "season_ls_deg": 90,
+      "local_time_h": 6,
+      "available_local_times_h": [
+        0,
+        6,
+        12,
+        18
+      ],
+      "dust": "MCD climatology average solar"
+    },
+    "thermal_observation_coverage": 0.24004895475790824,
+    "radiation_source": "uniform Gale RAD reference assumption, extrapolated to Arcadia",
+    "shielding_available": false,
+    "shielding_kind": null,
+    "terrain_obstruction_available": true,
+    "radiation_protection_validated": false,
+    "regional_radiation_measurements_available": false,
+    "shelter_candidate_count": 50,
+    "verified_shelter_count": 0,
+    "cave_candidate_count": 0,
+    "assumptions": [
+      "500 m MOLA grid: resolves km-scale craters and scarps, not boulders or rover-scale hazards.",
+      "Static MCD climate scenario at the requested local time; conditions do not change during the trip.",
+      "Radiation uses a uniform Gale dose-equivalent reference; no Arcadia calibration, terrain attenuation or solar particle events.",
+      "Blocked sky fraction measures DEM geometry and is not converted into radiation protection or a shielding score.",
+      "Ice consistency is SWIM's ~3 km product resampled; it is not finer than 3 km.",
+      "Terrain shelter candidates are walls that hide part of the sky, not caves or verified shelters.",
+      "Walking and battery parameters are illustrative, pending Person 5 validation."
+    ],
+    "excluded_risk_components": []
+  },
+  "risk_weights": {
+    "slope": 0.4,
+    "temperature": 0.25,
+    "dust": 0.15,
+    "radiation": 0.2
+  },
+  "budget": {
+    "oxygen_hours": 0.05,
+    "battery_wh": 1000.0,
+    "reserve_fraction": 0.2,
+    "return_to_start": true
+  },
+  "algorithm": "multi-label resource-constrained Dijkstra",
+  "route_model": "symmetric static edges; round-trip return reverses outbound path",
+  "search": {
+    "expanded_labels": 1,
+    "created_labels": 1
+  },
+  "status": "infeasible",
+  "reason": "no_feasible_route",
+  "route": null,
+  "metrics": null,
+  "turn_back": {
+    "action": "do_not_depart_for_requested_goal",
+    "explanation": "The requested goal was not reached within the search and configured constraints.",
+    "last_reachable": {
+      "row": 643,
+      "col": 1226,
+      "lon": -157.23023238448738,
+      "lat": 52.571882886901435
+    },
+    "candidate_outbound": [
+      {
+        "row": 643,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.571882886901435
+      }
+    ],
+    "return_path": [
+      {
+        "row": 643,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.571882886901435
+      }
+    ],
+    "candidate_round_trip": {
+      "hours": 0.0,
+      "battery_wh": 0.0,
+      "distance_km": 0.0,
+      "radiation_reference_msv": 0.0
+    },
+    "return_is_reserved": true
+  }
+}

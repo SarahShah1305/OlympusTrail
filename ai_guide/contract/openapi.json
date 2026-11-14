@@ -1,0 +1,706 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OlympusTrail Person 1 API",
+    "description": "Regional Mars hackathon planner. Data classes and assumptions accompany every result.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/data-status": {
+      "get": {
+        "summary": "Data Status",
+        "operationId": "data_status_data_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites": {
+      "get": {
+        "summary": "Get Sites",
+        "operationId": "get_sites_sites_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "default": 5,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "min_separation_km",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 500,
+              "minimum": 0,
+              "default": 15,
+              "title": "Min Separation Km"
+            }
+          },
+          {
+            "name": "max_slope_deg",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 45,
+              "exclusiveMinimum": 0,
+              "default": 10,
+              "title": "Max Slope Deg"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(scenario|observations)$",
+              "default": "scenario",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "edge_buffer_km",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 100,
+              "minimum": 0,
+              "default": 5,
+              "title": "Edge Buffer Km"
+            }
+          },
+          {
+            "name": "shelter_reach_km",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 50,
+              "minimum": 0,
+              "default": 5,
+              "title": "Shelter Reach Km"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Post Sites",
+        "operationId": "post_sites_sites_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SiteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shelters": {
+      "get": {
+        "summary": "Shelters",
+        "operationId": "shelters_shelters_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/route": {
+      "post": {
+        "summary": "Route",
+        "operationId": "route_route_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/briefing-data": {
+      "post": {
+        "summary": "Briefing Data",
+        "operationId": "briefing_data_briefing_data_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/terrain": {
+      "get": {
+        "summary": "Terrain Costs",
+        "operationId": "terrain_costs_terrain_get",
+        "parameters": [
+          {
+            "name": "stride",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Stride"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(scenario|observations)$",
+              "default": "scenario",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "local_time_h",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 12,
+              "title": "Local Time H"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MissionParameters": {
+        "properties": {
+          "walking_speed_kmh": {
+            "type": "number",
+            "maximum": 20.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Walking Speed Kmh",
+            "default": 3.0
+          },
+          "base_power_w": {
+            "type": "number",
+            "maximum": 5000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Base Power W",
+            "default": 100.0
+          },
+          "movement_energy_wh_km": {
+            "type": "number",
+            "maximum": 5000.0,
+            "minimum": 0.0,
+            "title": "Movement Energy Wh Km",
+            "default": 10.0
+          },
+          "cold_power_w_per_k": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Cold Power W Per K",
+            "default": 2.0
+          },
+          "cold_reference_k": {
+            "type": "number",
+            "maximum": 350.0,
+            "minimum": 100.0,
+            "title": "Cold Reference K",
+            "default": 230.0
+          },
+          "max_slope_deg": {
+            "type": "number",
+            "maximum": 45.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Slope Deg",
+            "default": 15.0
+          },
+          "max_dust_optical_depth": {
+            "type": "number",
+            "maximum": 10.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Dust Optical Depth",
+            "default": 1.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "MissionParameters",
+        "description": "Illustrative hackathon settings; replace with Person 5's parameter table."
+      },
+      "Position": {
+        "properties": {
+          "row": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row"
+          },
+          "col": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Col"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 360.0,
+                "minimum": -180.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 90.0,
+                "minimum": -90.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Position"
+      },
+      "RiskWeights": {
+        "properties": {
+          "slope": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Slope",
+            "default": 0.4
+          },
+          "radiation": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Radiation",
+            "default": 0.2
+          },
+          "temperature": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Temperature",
+            "default": 0.25
+          },
+          "dust": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Dust",
+            "default": 0.15
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "RiskWeights"
+      },
+      "RouteRequest": {
+        "properties": {
+          "start": {
+            "$ref": "#/components/schemas/Position"
+          },
+          "goal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Position"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "goal_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "ice"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal Type"
+          },
+          "ice_min_consistency": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": -1.0,
+            "title": "Ice Min Consistency",
+            "default": 0.75
+          },
+          "min_goal_distance_km": {
+            "type": "number",
+            "maximum": 1000.0,
+            "minimum": 0.0,
+            "title": "Min Goal Distance Km",
+            "description": "Minimum distance to an ice goal; omitted uses 2 km when the start already meets the ice threshold. Explicit 0 allows the start.",
+            "default": 0.0
+          },
+          "oxygen_hours": {
+            "type": "number",
+            "maximum": 1000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Oxygen Hours",
+            "default": 4.0
+          },
+          "battery_wh": {
+            "type": "number",
+            "maximum": 10000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Battery Wh",
+            "default": 1000.0
+          },
+          "reserve_fraction": {
+            "type": "number",
+            "exclusiveMaximum": 1.0,
+            "minimum": 0.0,
+            "title": "Reserve Fraction",
+            "default": 0.2
+          },
+          "return_to_start": {
+            "type": "boolean",
+            "title": "Return To Start",
+            "default": true
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "scenario",
+              "observations"
+            ],
+            "title": "Mode",
+            "default": "scenario"
+          },
+          "local_time_h": {
+            "type": "integer",
+            "enum": [
+              0,
+              6,
+              12,
+              18
+            ],
+            "title": "Local Time H",
+            "description": "Local solar time of the EVA for scenario temperature/sunlight (h)",
+            "default": 12
+          },
+          "avoid": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "steep",
+                "dust",
+                "cold",
+                "unknown_thermal"
+              ]
+            },
+            "type": "array",
+            "title": "Avoid"
+          },
+          "weights": {
+            "$ref": "#/components/schemas/RiskWeights"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/MissionParameters"
+          },
+          "max_search_labels": {
+            "type": "integer",
+            "maximum": 300000.0,
+            "minimum": 10.0,
+            "title": "Max Search Labels",
+            "default": 100000
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "start"
+        ],
+        "title": "RouteRequest"
+      },
+      "SiteRequest": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 5
+          },
+          "min_separation_km": {
+            "type": "number",
+            "maximum": 500.0,
+            "minimum": 0.0,
+            "title": "Min Separation Km",
+            "default": 15.0
+          },
+          "max_slope_deg": {
+            "type": "number",
+            "maximum": 45.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Slope Deg",
+            "default": 10.0
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "scenario",
+              "observations"
+            ],
+            "title": "Mode",
+            "default": "scenario"
+          },
+          "edge_buffer_km": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Edge Buffer Km",
+            "description": "Ignore cells this close to the map edge",
+            "default": 5.0
+          },
+          "shelter_reach_km": {
+            "type": "number",
+            "maximum": 50.0,
+            "minimum": 0.0,
+            "title": "Shelter Reach Km",
+            "description": "Reserved compatibility field; unvalidated shielding is excluded from site scores",
+            "default": 5.0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SiteRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

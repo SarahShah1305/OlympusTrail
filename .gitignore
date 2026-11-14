@@ -1,3 +1,6 @@
 .venv/
 __pycache__/
 *.py[cod]
+.env
+ai_guide/.env
+node_modules/

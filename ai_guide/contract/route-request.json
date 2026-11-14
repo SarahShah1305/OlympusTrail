@@ -1,0 +1,15 @@
+{
+  "start": {
+    "row": 643,
+    "col": 1226
+  },
+  "goal_type": "ice",
+  "min_goal_distance_km": 3,
+  "oxygen_hours": 4,
+  "battery_wh": 1000,
+  "reserve_fraction": 0.2,
+  "return_to_start": true,
+  "local_time_h": 6,
+  "mode": "scenario",
+  "avoid": []
+}
