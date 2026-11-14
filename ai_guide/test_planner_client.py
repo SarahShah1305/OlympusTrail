@@ -3,11 +3,14 @@
 import asyncio
 from types import SimpleNamespace
 
+import httpx
 import pytest
 
+from ai_guide import planner_client
 from ai_guide.planner_client import (
     build_route_request,
     call_planner,
+    get_sites,
     to_ui_path,
 )
 
@@ -94,6 +97,40 @@ def test_unknown_fields_never_appear_in_request():
     for field in ("question", "intent", "unsupported", "battery_pct", "confidence", "other"):
         assert field not in request
     assert request["battery_wh"] == 550
+
+
+def test_mock_mode_still_returns_mock_route(monkeypatch):
+    """Explicit mock mode continues to return the sample route."""
+    monkeypatch.setenv("USE_MOCK", "1")
+    result = asyncio.run(call_planner({"oxygen_hours": 4}))
+    assert result["status"] == "ok"
+    assert result["_mock"] is True
+
+
+def test_real_route_connection_error_raises_planner_error(monkeypatch):
+    """Real mode reports a connection failure instead of returning mock data."""
+    monkeypatch.setenv("USE_MOCK", "0")
+
+    async def fail_connect(self, *args, **kwargs):
+        raise httpx.ConnectError("offline")
+
+    monkeypatch.setattr(httpx.AsyncClient, "post", fail_connect)
+    with pytest.raises(planner_client.PlannerError) as error:
+        asyncio.run(call_planner({"oxygen_hours": 4}))
+    assert str(error.value) == "I could not reach the route planner. Please check that it is running."
+
+
+def test_real_sites_connection_error_raises_planner_error(monkeypatch):
+    """Real sites mode reports connection errors without a mock site list."""
+    monkeypatch.setenv("USE_MOCK", "0")
+
+    async def fail_connect(self, *args, **kwargs):
+        raise httpx.ConnectError("offline")
+
+    monkeypatch.setattr(httpx.AsyncClient, "get", fail_connect)
+    with pytest.raises(planner_client.PlannerError) as error:
+        asyncio.run(get_sites())
+    assert str(error.value) == "I could not reach the route planner. Please check that it is running."
 
 
 @pytest.fixture(autouse=True)

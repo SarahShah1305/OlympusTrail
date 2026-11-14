@@ -15,6 +15,7 @@ class PlannerError(Exception):
 
 _GUIDE_DIR = Path(__file__).resolve().parent
 load_dotenv(_GUIDE_DIR / ".env")
+_CONNECTION_ERROR_MESSAGE = "I could not reach the route planner. Please check that it is running."
 _ALLOWED_FIELDS = {
     "start", "goal_type", "oxygen_hours", "battery_wh", "reserve_fraction",
     "return_to_start", "local_time_h", "mode", "min_goal_distance_km", "avoid",
@@ -120,15 +121,15 @@ def _planner_url() -> str:
 
 
 async def call_planner(request: dict) -> dict:
-    """POST a route request, using mock output when configured or offline."""
+    """POST a route request, using mock output only when explicitly configured."""
     if _use_mock():
         return _mock_route(request)
 
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.post(f"{_planner_url()}/route", json=request)
-    except (httpx.TimeoutException, httpx.ConnectError):
-        return _mock_route(request)
+    except (httpx.TimeoutException, httpx.ConnectError) as exc:
+        raise PlannerError(_CONNECTION_ERROR_MESSAGE) from exc
 
     if response.status_code == 422:
         raise PlannerError("The route request was rejected. Check the start position and constraints.")
@@ -171,7 +172,7 @@ def _mock_sites() -> dict:
 
 
 async def get_sites() -> dict:
-    """Fetch candidate sites, falling back to a built-in mock on failure."""
+    """Fetch candidate sites, using built-in mock data only in mock mode."""
     if _use_mock():
         return _mock_sites()
     try:
@@ -180,8 +181,12 @@ async def get_sites() -> dict:
         response.raise_for_status()
         result = response.json()
         if not isinstance(result, dict):
-            return _mock_sites()
+            raise PlannerError("The site planner returned an invalid response.")
         result["_mock"] = False
         return result
-    except (httpx.HTTPError, ValueError):
-        return _mock_sites()
+    except (httpx.TimeoutException, httpx.ConnectError) as exc:
+        raise PlannerError(_CONNECTION_ERROR_MESSAGE) from exc
+    except httpx.HTTPError as exc:
+        raise PlannerError("The site planner returned an error.") from exc
+    except ValueError as exc:
+        raise PlannerError("The site planner returned an invalid response.") from exc

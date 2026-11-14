@@ -227,11 +227,17 @@ async def explain(question: str, parsed: Any, result: dict, warnings: List[str])
     """Explain a planner result, falling back to a fixed template on any failure."""
     try:
         summary = summarize_result(result)
+        if summary["status"] in {"infeasible", "search_limit"}:
+            return template_explanation(summary, warnings), "fallback"
+
         user = json.dumps({"summary": summary, "question": question}, ensure_ascii=False)
         text = await complete_text(_SYSTEM_PROMPT, user)
         if not isinstance(text, str) or not text.strip():
             raise ValueError("LLM returned no explanation")
         text = text.strip()
+        lowered_text = text.lower()
+        if any(phrase in lowered_text for phrase in ("not possible", "cannot reach", "infeasible")):
+            return template_explanation(summary, warnings), "fallback"
         _postcheck_numbers(text, summary, question, warnings)
 
         no_destination = (
