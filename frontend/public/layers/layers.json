@@ -1,0 +1,259 @@
+{
+  "region": "Arcadia Planitia",
+  "crs": "+proj=eqc +lat_ts=46.0 +lat_0=0 +lon_0=0 +a=3396190.0 +b=3396190.0 +units=m +no_defs",
+  "pixel_size_m": 3000,
+  "bounds_lonlat": [
+    -173.0,
+    40.0,
+    -157.0,
+    52.0
+  ],
+  "bounds_latlng": [
+    [
+      39.954388131305734,
+      -172.99999999999997
+    ],
+    [
+      52.0,
+      -156.97111489637874
+    ]
+  ],
+  "cave_candidate_count": 0,
+  "layers": [
+    {
+      "id": "elevation",
+      "image": "elevation.png",
+      "bounds_latlng": [
+        [
+          39.954388131305734,
+          -172.99999999999997
+        ],
+        [
+          52.0,
+          -156.97111489637874
+        ]
+      ],
+      "width": 220,
+      "height": 238,
+      "min": -4763.4453125,
+      "max": -3353.87158203125,
+      "units": "m",
+      "coverage_percent": 100.0,
+      "valid_pixels": 52360,
+      "total_pixels": 52360,
+      "label": "Elevation",
+      "description": "Regional scale on a 3 km grid, not rover-scale hazards.",
+      "source": "mola",
+      "legend_colors": [
+        "#1B2D52",
+        "#2A4278",
+        "#E9DFCC",
+        "#FF6B5B"
+      ]
+    },
+    {
+      "id": "slope",
+      "image": "slope.png",
+      "bounds_latlng": [
+        [
+          39.954388131305734,
+          -172.99999999999997
+        ],
+        [
+          52.0,
+          -156.97111489637874
+        ]
+      ],
+      "width": 220,
+      "height": 238,
+      "min": 0.00020648106874432415,
+      "max": 10.564416885375977,
+      "units": "degrees",
+      "coverage_percent": 100.0,
+      "valid_pixels": 52360,
+      "total_pixels": 52360,
+      "label": "Slope",
+      "description": "Regional scale on a 3 km grid, not rover-scale hazards.",
+      "source": "mola",
+      "legend_colors": [
+        "#1B2D52",
+        "#22386A",
+        "#E9DFCC",
+        "#FF6B5B"
+      ]
+    },
+    {
+      "id": "aspect",
+      "image": "aspect.png",
+      "bounds_latlng": [
+        [
+          39.954388131305734,
+          -172.99999999999997
+        ],
+        [
+          52.0,
+          -156.97111489637874
+        ]
+      ],
+      "width": 220,
+      "height": 238,
+      "min": 0.003753162454813719,
+      "max": 359.9895324707031,
+      "units": "degrees clockwise from north",
+      "coverage_percent": 100.0,
+      "valid_pixels": 52360,
+      "total_pixels": 52360,
+      "label": "Aspect",
+      "description": "Downhill bearing. Flat-cell bearings are unreliable.",
+      "source": "mola",
+      "legend_colors": [
+        "#1B2D52",
+        "#2A4278",
+        "#E9DFCC",
+        "#FF6B5B",
+        "#1B2D52"
+      ]
+    },
+    {
+      "id": "ice",
+      "image": "ice.png",
+      "bounds_latlng": [
+        [
+          39.954388131305734,
+          -172.99999999999997
+        ],
+        [
+          52.0,
+          -156.97111489637874
+        ]
+      ],
+      "width": 220,
+      "height": 238,
+      "min": 0.29225751757621765,
+      "max": 0.9799253344535828,
+      "units": "consistency index (0\u20131 m)",
+      "coverage_percent": 100.0,
+      "valid_pixels": 52360,
+      "total_pixels": 52360,
+      "label": "Ice",
+      "description": "SWIM consistency index of ice in the upper metre. Not ice depth, not a probability, not a confirmed deposit.",
+      "source": "swim",
+      "legend_colors": [
+        "#1B2D52",
+        "#2A4278",
+        "#E9DFCC",
+        "#FF6B5B"
+      ]
+    },
+    {
+      "id": "temperature",
+      "image": "temperature.png",
+      "bounds_latlng": [
+        [
+          39.954388131305734,
+          -172.99999999999997
+        ],
+        [
+          52.0,
+          -156.97111489637874
+        ]
+      ],
+      "width": 220,
+      "height": 238,
+      "min": 163.1768798828125,
+      "max": 183.3890838623047,
+      "units": "K",
+      "coverage_percent": 5.68,
+      "valid_pixels": 2972,
+      "total_pixels": 52360,
+      "label": "Temperature",
+      "description": "Partial coverage from 3 THEMIS scenes taken on different dates. Not a forecast. Empty areas have no data.",
+      "source": "themis",
+      "legend_colors": [
+        "#1B2D52",
+        "#22386A",
+        "#E9DFCC",
+        "#FF6B5B"
+      ]
+    },
+    {
+      "id": "dust",
+      "label": "Atmospheric column dust optical depth",
+      "image": "dust.png",
+      "bounds_latlng": [
+        [
+          39.954388131305734,
+          -172.99999999999997
+        ],
+        [
+          52.0,
+          -156.97111489637874
+        ]
+      ],
+      "width": 220,
+      "height": 238,
+      "min": 0.11180507391691208,
+      "max": 0.17522872984409332,
+      "units": "dimensionless optical depth",
+      "coverage_percent": 100.0,
+      "valid_pixels": 52360,
+      "total_pixels": 52360,
+      "description": "Atmospheric column dust optical depth, very coarse (3 deg cells). Not a surface hazard map. Averaged over MY36 daily maps.",
+      "badge": "Real data, coarse",
+      "source": "lmd-dust",
+      "variable": "cdodtot",
+      "period": "MY36, daily maps, SOY 1-669",
+      "solar_longitude_range_degrees": [
+        0.1334,
+        359.8258
+      ],
+      "spatial_resolution_degrees": 3,
+      "file_version": "2-5",
+      "citation": "Montabone, L., Spiga, A., Kass, D. M., Kleinb\u00f6hl, A., Forget, F., Millour, E., Martian Year 34 Column Dust Climatology from Mars Climate Sounder Observations: Reconstructed Maps and Model Simulations, J. Geophys. Res. - Planets (2020), doi: 10.1029/2019JE006111 [Resource type: Data Entity Version 2.5 for MY 36].",
+      "license": "CC BY-SA 3.0 Unported",
+      "license_terms": "Data included in the present file are publicly available with open access, under Creative Commons Attribution-ShareAlike 3.0 Unported License (i.e. you are free to copy, redistribute, and modify the material for scientific as well as commercial purposes, as far as you give appropriate credit, indicate if changes were made, and distribute your contributions with the same license as the original).",
+      "source_url": "https://www-mars.lmd.jussieu.fr/mars/dust_climatology/dataset_v2/dustscenario_MY36_v2-5.nc",
+      "methodology_doi": "10.1029/2019JE006111",
+      "alternative_pds_doi_not_used": "10.17189/kwez-jq47",
+      "legend_colors": [
+        "#1B2D52",
+        "#22386A",
+        "#E9DFCC",
+        "#FF6B5B"
+      ]
+    },
+    {
+      "id": "sunlight",
+      "label": "Relative illumination \u00b7 equinox noon",
+      "image": "sunlight.png",
+      "bounds_latlng": [
+        [
+          39.954388131305734,
+          -172.99999999999997
+        ],
+        [
+          52.0,
+          -156.97111489637874
+        ]
+      ],
+      "width": 220,
+      "height": 238,
+      "min": 0.604748010635376,
+      "max": 0.8087560534477234,
+      "units": "relative index (0\u20131)",
+      "coverage_percent": 100.0,
+      "valid_pixels": 52360,
+      "total_pixels": 52360,
+      "description": "Derived from MOLA terrain. Ignores atmosphere, dust and shadows. Relative index only.",
+      "assumptions": "Local solar noon, solar declination 0 degrees (equinox), Sun due south for this northern-hemisphere region. Direct-beam cosine incidence is clipped to 0-1. Ignores atmosphere, dust, shadows and seasonal/daylight duration; relative index only.",
+      "source": "mola",
+      "badge": "Derived",
+      "legend_colors": [
+        "#1B2D52",
+        "#22386A",
+        "#E9DFCC",
+        "#FF6B5B"
+      ]
+    }
+  ]
+}
