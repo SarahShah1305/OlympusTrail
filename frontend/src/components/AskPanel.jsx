@@ -9,20 +9,12 @@ const EXAMPLE_QUESTIONS = [
   'Compare areas for a possible base.',
 ]
 
-const submitButtonStyle = {
-  width: 'auto',
-  minHeight: 40,
-  padding: '0 14px',
-  fontSize: 14,
-  whiteSpace: 'nowrap',
-}
-
 const statusLabels = {
-  unchecked: 'Not checked',
-  checking: 'Checking…',
-  connected: 'Connected',
-  unavailable: 'Unavailable',
-  demo: 'Demo mode',
+  unchecked: 'Ask a question',
+  checking: 'Thinking…',
+  connected: 'Ready',
+  unavailable: 'Guide is offline',
+  demo: 'Guide unavailable in sample mode',
 }
 
 export default function AskPanel({
@@ -105,7 +97,7 @@ export default function AskPanel({
       if (version !== requestVersion.current) return
       setConnectionState('unavailable')
       setError(
-        'The live planner could not answer. Use the manual route planner or try again.',
+        'The guide could not answer. Check your trip with the planner or try again.',
       )
     } finally {
       if (version === requestVersion.current) setLoading(false)
@@ -172,7 +164,7 @@ export default function AskPanel({
 
       <p style={{ margin: '8px 0 10px', fontSize: 14, lineHeight: 1.5 }}>
         {isDemo
-          ? 'The guide needs a live planner in demo mode. Example prompts fill the box, and you can still build a route with the manual planner.'
+          ? 'The guide is unavailable in sample mode. You can still plan a trip using the controls.'
           : 'When you press Send, your question and the selected map starting point are sent to the live planner. Without a selected base, the guide uses its configured default starting point, which will appear in the result. Example prompts fill the box; they do not send automatically.'}
       </p>
 
@@ -218,7 +210,6 @@ export default function AskPanel({
           type="submit"
           className="primary-button"
           disabled={!question.trim() || loading}
-          style={submitButtonStyle}
         >
           {loading ? 'Sending…' : 'Send'}
         </button>

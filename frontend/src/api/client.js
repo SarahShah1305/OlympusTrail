@@ -32,7 +32,7 @@ export async function request(path, options = {}) {
 }
 export async function getSites(sourceMode = 'live') {
   if (sourceMode === 'demo') return { sites: exampleSites }
-  return normalizeSites(await request('/sites'))
+  return normalizeSites(await request('/sites?min_separation_km=60'))
 }
 export async function planRoute(options) {
   if (options.sourceMode === 'demo') return exampleRoute(options)
