@@ -7,7 +7,7 @@ export const config = {
     center: [46, -165],
     zoom: 4,
     minZoom: 3,
-    maxZoom: 8,
+    maxZoom: 11,
     bounds: [
       [40, -173],
       [58, -157],

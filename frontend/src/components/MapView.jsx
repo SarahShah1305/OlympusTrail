@@ -1,385 +1,96 @@
 import { useEffect, useState } from 'react'
-import {
-  CircleMarker,
-  Rectangle,
-  ImageOverlay,
-  MapContainer,
-  Marker,
-  Polyline,
-  Popup,
-  ScaleControl,
-  TileLayer,
-  useMap,
-  useMapEvents,
-} from 'react-leaflet'
+import { CircleMarker, ImageOverlay, MapContainer, Marker, Polygon, Polyline, Popup, Rectangle, ScaleControl, TileLayer, ZoomControl, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { config } from '../config'
+import '../styles/map-revamp.css'
 
 const marsCrs = Object.create(L.CRS.EPSG4326)
 marsCrs.code = 'IAU2000:104905'
-marsCrs.distance = (first, second) => {
-  const radians = (degrees) => (degrees * Math.PI) / 180
-  const lat1 = radians(first.lat)
-  const lat2 = radians(second.lat)
-  const deltaLat = lat2 - lat1
-  const deltaLng = radians(second.lng - first.lng)
-  const haversine =
-    Math.sin(deltaLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) ** 2
-  return 2 * config.region.marsRadiusMeters * Math.asin(Math.sqrt(haversine))
+marsCrs.distance = (a, b) => {
+  const r = (d) => d * Math.PI / 180
+  const h = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lng - a.lng) / 2) ** 2
+  return 2 * config.region.marsRadiusMeters * Math.asin(Math.sqrt(Math.min(1, h)))
 }
+const bounds = config.region.bounds
+const isInside = ({lat, lng}) => lat >= bounds[0][0] && lat <= bounds[1][0] && lng >= bounds[0][1] && lng <= bounds[1][1]
+const pos = p => [p.lat, p.lon > 180 ? p.lon - 360 : p.lon]
 
-function MapClickHandler({ enabled, onMapClick }) {
-  useMapEvents({
-    click(event) {
-      if (enabled) onMapClick(event.latlng)
-    },
-  })
+function MapEvents({ enabled, onMapClick, onOutside }) {
+  useMapEvents({ click(e) { if (!isInside(e.latlng)) onOutside(); else if (enabled) onMapClick(e.latlng) } })
   return null
 }
-
-function SiteFocus({ site }) {
+function FitArea({ site, path }) {
   const map = useMap()
   useEffect(() => {
-    if (site && map.getSize().x > 0 && map.getSize().y > 0)
-      map.flyTo([site.lat, site.lng], Math.max(map.getZoom(), 6), {
-        duration: 0.5,
-      })
-  }, [map, site])
-  return null
-}
-
-function GridBounds({ bounds }) {
-  const map = useMap()
-  useEffect(() => {
-    map.setMaxBounds(bounds)
-    map.fitBounds(bounds, { animate: false })
-  }, [bounds, map])
-  return null
-}
-
-function MapResize({ site, path }) {
-  const map = useMap()
-  useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      if (!map.getContainer().clientWidth || !map.getContainer().clientHeight)
-        return
-      map.invalidateSize()
-      if (path?.length > 1)
-        map.fitBounds(path, { padding: [24, 24], animate: false })
-      else if (site)
-        map.setView([site.lat, site.lng], Math.max(map.getZoom(), 6), {
-          animate: false,
-        })
-    })
+    let initial = true
+    const update = () => {
+      const container = map.getContainer()
+      if (!container.clientWidth || !container.clientHeight) return
+      map.invalidateSize({animate: false})
+      const zoom = Math.max(0, map.getBoundsZoom(bounds))
+      map.setMinZoom(Math.min(zoom, config.region.maxZoom))
+      map.setMaxBounds(bounds)
+      if (initial) { map.fitBounds(bounds, {animate:false}); initial = false }
+    }
+    const observer = new ResizeObserver(update)
     observer.observe(map.getContainer())
+    update()
     return () => observer.disconnect()
-  }, [map, site, path])
-  return null
-}
-
-function RouteFocus({ path }) {
-  const map = useMap()
+  }, [map])
   useEffect(() => {
-    if (path?.length > 1 && map.getSize().x > 0 && map.getSize().y > 0)
-      map.fitBounds(path, { padding: [24, 24] })
-  }, [map, path])
+    if (!map.getSize().x || !map.getSize().y) return
+    if (path?.length > 1) map.fitBounds(path, {padding:[36,36], animate:false})
+    else if (site) map.setView([site.lat, site.lng], Math.max(map.getZoom(), 6), {animate:false})
+  }, [map, path, site])
   return null
 }
-
-function makeMarkerIcon(label, kind, rank) {
-  return L.divIcon({
-    className: 'map-marker-icon',
-    html: `<span class="map-marker map-marker--${kind} ${rank === 1 ? 'map-marker--top' : ''}">${label}</span>`,
-    iconSize: [
-      kind === 'site' && rank === 1 ? 38 : 32,
-      kind === 'site' && rank === 1 ? 38 : 32,
-    ],
-    iconAnchor: [16, 16],
-  })
+function icon(label, kind, selected) {
+  return L.divIcon({ className:'map-marker-icon', html:`<span class="trail-marker trail-marker-${kind}${selected ? ' selected' : ''}">${label}</span>`, iconSize:kind === 'site' ? [26,26] : [40,40], iconAnchor:kind === 'site' ? [13,13] : [20,20] })
 }
-
-function DraggableEndpoint({ point, label, onDrag }) {
+function Endpoint({ point, label, onDrag, draggable = true }) {
   if (!point) return null
-  return (
-    <Marker
-      position={[point.lat, point.lng]}
-      icon={makeMarkerIcon(label, 'endpoint')}
-      draggable
-      eventHandlers={{
-        dragend(event) {
-          const position = event.target.getLatLng()
-          onDrag({ lat: position.lat, lng: position.lng })
-        },
-      }}
-    >
-      <Popup>
-        {label === 'A' ? 'Start point' : 'Goal point'} · drag to adjust
-      </Popup>
-    </Marker>
-  )
+  const title = label === 'A' ? 'A · You are here' : 'B · Destination'
+  return <Marker position={[point.lat,point.lng]} icon={icon(label,label.toLowerCase())} zIndexOffset={label === 'A' ? 1000 : 900} title={title} alt={title} draggable={draggable} eventHandlers={{dragend(e) {const p=e.target.getLatLng(); if (isInside(p)) onDrag?.({lat:p.lat,lng:p.lng}); else e.target.setLatLng([point.lat,point.lng])}}}><Popup>{title}{draggable ? ' · drag to adjust' : ''}</Popup></Marker>
 }
-
-function LayerLegend({ layers, activeLayers }) {
-  const active = layers.filter((layer) => activeLayers[layer.id])
-  if (!active.length) return null
-  return (
-    <div className="map-layer-legends" aria-label="Active layer legends">
-      {active.map((layer) => (
-        <div className="map-layer-legend" key={layer.id}>
-          <strong>{layer.label}</strong>
-          {layer.id === 'ice' && (
-            <span>Weaker → stronger ice evidence (not probability)</span>
-          )}
-          <span>3 km display grid; resampling does not add detail.</span>
-          <span>
-            {layer.min.toLocaleString(undefined, { maximumFractionDigits: 2 })}–
-            {layer.max.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
-            {layer.units}
-          </span>
-          <span
-            className="legend-ramp"
-            style={{
-              background: `linear-gradient(90deg, ${layer.legend_colors.join(', ')})`,
-            }}
-            aria-hidden="true"
-          />
-          {layer.id === 'temperature' && (
-            <span className="temperature-coverage">
-              <span>
-                <i style={{ width: `${layer.coverage_percent}%` }} />
-              </span>
-              <small>
-                {layer.coverage_percent.toFixed(1)}% of map has data
-              </small>
-            </span>
-          )}
-        </div>
-      ))}
-    </div>
-  )
+function Legend({ layers, activeLayers }) {
+  const layer = layers.find(l => activeLayers[l.id])
+  return <details className="trail-map-legend"><summary>Map key</summary><div className="trail-legend-items"><span><b className="trail-key-a">A</b> You are here</span><span><b className="trail-key-b">B</b> Destination</span><span>━ Route</span><span>● Turn-back point</span><span>① Candidate site</span></div>{layer && <div><strong>{layer.label}</strong>{layer.legend_colors?.length > 0 && <div className="trail-ramp" style={{background:`linear-gradient(90deg, ${layer.legend_colors.join(', ')})`}} />}{layer.id === 'ice' ? <p>Ice evidence: low · medium · high. Ice is not a confirmed deposit.</p> : <p>{layer.units}</p>}</div>}</details>
 }
-
-export default function MapView({
-  mode,
-  sites,
-  activeLayers,
-  start,
-  goal,
-  onMapClick,
-  onStartChange,
-  onGoalChange,
-  route,
-  askRoutePath,
-  onSelectSite,
-  onUseSite,
-  sourceMode,
-  editPoint,
-  selectedSite,
-  layerMetadata,
-  overlayOpacity,
-}) {
+export default function MapView({ mode, sites = [], activeLayers, start, goal, onMapClick, onStartChange, onGoalChange, route, askRoutePath, onSelectSite, onUseSite, sourceMode, editPoint, selectedSite, layerMetadata, overlayOpacity, allowMapClick }) {
   const [tileError, setTileError] = useState(false)
   const [imageError, setImageError] = useState('')
+  const [outside, setOutside] = useState(false)
   const layerList = layerMetadata?.layers || []
-  const regionBounds = config.region.bounds
-  const routePositions = route?.path || []
-  const alternative = route?.alternative_path || []
-
-  return (
-    <section className="map-column" aria-label="Mars map">
-      <div className="map-canvas">
-        <MapContainer
-          center={config.region.center}
-          zoom={config.region.zoom}
-          minZoom={config.region.minZoom}
-          maxZoom={config.region.maxZoom}
-          maxBounds={regionBounds}
-          maxBoundsViscosity={0.75}
-          crs={marsCrs}
-          scrollWheelZoom
-          zoomControl
-          className="leaflet-map"
-        >
-          <MapResize site={selectedSite} path={askRoutePath} />
-          <GridBounds bounds={regionBounds} />
-          {layerMetadata?.bounds_latlng && (
-            <Rectangle
-              bounds={layerMetadata.bounds_latlng}
-              pathOptions={{
-                color: '#f4ede0',
-                weight: 2,
-                dashArray: '6 6',
-                fill: false,
-              }}
-            >
-              <Popup>
-                Historical overlay coverage: 40–52°N. Planner coverage extends
-                to 58°N. Blank temperature cells mean no observation.
-              </Popup>
-            </Rectangle>
-          )}
-          <RouteFocus path={askRoutePath} />
-          {
-            <TileLayer
-              url={config.map.tileUrl}
-              maxNativeZoom={6}
-              attribution={config.map.attribution}
-              eventHandlers={{
-                tileerror: () => setTileError(true),
-                tileload: () => setTileError(false),
-              }}
-            />
-          }
-          {layerList
-            .filter((layer) => activeLayers[layer.id])
-            .map((layer) => (
-              <ImageOverlay
-                key={layer.id}
-                url={`${import.meta.env.BASE_URL}layers/${layer.image}`}
-                bounds={layer.bounds_latlng}
-                opacity={overlayOpacity}
-                alt={`${layer.label} source raster overlay`}
-                eventHandlers={{
-                  error: () => setImageError(layer.label),
-                }}
-              />
-            ))}
-          <MapClickHandler enabled={mode === 'route'} onMapClick={onMapClick} />
-          <SiteFocus site={selectedSite} />
-          {mode === 'sites' &&
-            sites.map((site) => (
-              <Marker
-                key={site.id}
-                position={[site.lat, site.lng]}
-                icon={makeMarkerIcon(site.rank, 'site', site.rank)}
-                title={`Rank ${site.rank}: ${site.name}`}
-                alt={`Rank ${site.rank}, ${site.name}`}
-                eventHandlers={{ click: () => onSelectSite?.(site) }}
-              >
-                <Popup>
-                  <div className="site-popup">
-                    <span className="eyebrow">
-                      {sourceMode === 'demo' ? 'Example' : 'Model ranking'} ·
-                      rank {site.rank} · relative score {site.score}/100
-                    </span>
-                    <strong>{site.name}</strong>
-                    <ul>
-                      {site.reasons.map((reason) => (
-                        <li key={reason}>{reason}</li>
-                      ))}
-                    </ul>
-                    <button
-                      type="button"
-                      className="site-use-button"
-                      onClick={() => onUseSite?.(site)}
-                    >
-                      Use as starting base
-                    </button>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-          {!goal && route?.status === 'ok' && route.route?.destination && (
-            <Marker
-              position={[
-                route.route.destination.lat,
-                route.route.destination.lon > 180
-                  ? route.route.destination.lon - 360
-                  : route.route.destination.lon,
-              ]}
-              icon={makeMarkerIcon('B', 'endpoint')}
-            >
-              <Popup>
-                Ice evidence destination B. Return follows the same path to A.
-              </Popup>
-            </Marker>
-          )}
-          <DraggableEndpoint point={start} label="A" onDrag={onStartChange} />
-          <DraggableEndpoint point={goal} label="B" onDrag={onGoalChange} />
-          {alternative.length > 1 && (
-            <Polyline
-              positions={alternative}
-              pathOptions={{
-                color: '#F4EDE0',
-                opacity: 1,
-                weight: 7,
-                dashArray: '5 9',
-              }}
-            />
-          )}
-          {routePositions.length > 1 && (
-            <>
-              <Polyline
-                positions={routePositions}
-                pathOptions={{ color: '#14213D', opacity: 1, weight: 11 }}
-              />
-              <Polyline
-                positions={routePositions}
-                pathOptions={{
-                  className: 'planned-route-line',
-                  color: '#FF4F45',
-                  opacity: 1,
-                  weight: 7,
-                }}
-              />
-            </>
-          )}
-          {route?.abort_points?.map((point) => (
-            <CircleMarker
-              key={`abort-${point.lat}-${point.lng}`}
-              center={[point.lat, point.lng]}
-              radius={6}
-              pathOptions={{
-                color: '#14213D',
-                weight: 2,
-                fillColor: '#FF6B5B',
-                fillOpacity: 1,
-              }}
-            >
-              <Popup>{point.label}</Popup>
-            </CircleMarker>
-          ))}
-          <ScaleControl position="bottomleft" imperial={false} />
-        </MapContainer>
-        <div className="map-caption">
-          <span>{config.region.name}</span>
-          <span className="map-status">
-            <i />{' '}
-            {tileError ? 'Basemap unavailable' : 'NASA basemap (historical)'}
-          </span>
-          <a
-            className="map-credit"
-            href="https://trek.nasa.gov/mars/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            NASA Mars Trek
-          </a>
-        </div>
-        {mode === 'route' && (
-          <div className="map-hint" role="status">
-            {editPoint === 'goal'
-              ? 'Click to set destination B'
-              : 'Click to set starting base A'}{' '}
-            · markers can also be dragged
-          </div>
-        )}
-        {imageError && (
-          <div className="map-data-error" role="alert">
-            {imageError} overlay is unavailable. Other layers and the planner
-            can still be used.
-            <button type="button" onClick={() => setImageError('')}>
-              Dismiss
-            </button>
-          </div>
-        )}
-        <p className="map-coverage-note">
-          Planner: 40–58°N · 500 m cells. Dashed boundary: historical 3 km
-          overlays, 40–52°N. Not rover-scale detail.
-        </p>
-        <LayerLegend layers={layerList} activeLayers={activeLayers} />
-      </div>
-    </section>
-  )
+  const path = route?.path || []
+  const outbound = route?.route?.outbound?.map(pos) || path
+  const returnPath = route?.route?.return_path?.map(pos) || []
+  const destination = route?.route?.destination ? pos(route.route.destination) : sourceMode === 'demo' && route?.status === 'ok' ? path[1] : null
+  const hiddenSite = s => start && Math.abs(s.lat-start.lat) < 0.00001 && Math.abs(s.lng-start.lng) < 0.00001
+  const mid = Math.floor(outbound.length / 2)
+  const arrow = mid > 0 ? {point: outbound[mid], angle: Math.atan2(outbound[mid][1]-outbound[mid-1][1],outbound[mid][0]-outbound[mid-1][0]) * 180 / Math.PI} : null
+  const mask = [[[-90,-180],[-90,180],[90,180],[90,-180]],[[40,-173],[58,-173],[58,-157],[40,-157]]]
+  return <section className="map-column" aria-label="Mars planning map"><div className="map-canvas">
+    <MapContainer center={config.region.center} zoom={config.region.zoom} minZoom={config.region.minZoom} maxZoom={config.region.maxZoom} maxBounds={bounds} maxBoundsViscosity={1} crs={marsCrs} scrollWheelZoom zoomControl={false} zoomSnap={0.25} zoomDelta={0.5} className="leaflet-map">
+      <FitArea site={selectedSite} path={askRoutePath || path} />
+      <TileLayer className="trail-basemap" url={config.map.tileUrl} maxNativeZoom={6} attribution={config.map.attribution} eventHandlers={{tileerror:()=>setTileError(true),tileload:()=>setTileError(false)}} />
+      {layerList.filter(l => activeLayers[l.id]).map(l => <ImageOverlay key={l.id} url={`${import.meta.env.BASE_URL}layers/${l.image}`} bounds={l.bounds_latlng} opacity={overlayOpacity} alt={`${l.label} map overlay`} eventHandlers={{error:()=>setImageError(l.label)}} />)}
+      <Polygon positions={mask} interactive={false} pathOptions={{stroke:false,fillColor:'#191b1b',fillOpacity:0.45,fillRule:'evenodd'}} />
+      <Rectangle bounds={bounds} interactive={false} pathOptions={{color:'#fff',opacity:.7,weight:1,fill:false}} />
+      <MapEvents enabled={allowMapClick ?? (mode === 'route' || !start)} onMapClick={onMapClick} onOutside={()=>{setOutside(true);window.setTimeout(()=>setOutside(false),4000)}} />
+      {sites.filter(s => !hiddenSite(s)).map(site => <Marker key={site.id} position={[site.lat,site.lng]} icon={icon(site.rank,'site',selectedSite?.id===site.id)} opacity={selectedSite && selectedSite.id!==site.id ? .55 : 1} title={`Site ${site.rank}: ${site.name}`} eventHandlers={{click:()=>onSelectSite?.(site)}}><Popup><div className="site-popup"><strong>{site.name}</strong><p>{sourceMode==='demo'?'Example location':`Relative score ${site.score}/100`}</p><button type="button" className="site-use-button" onClick={()=>onUseSite?.(site)}>Start here</button></div></Popup></Marker>)}
+      {outbound.length > 1 && <><Polyline positions={outbound} pathOptions={{color:'#202522',weight:10}} /><Polyline positions={outbound} pathOptions={{color:'#fff',weight:5,className:'trail-route'}} /></>}
+      {arrow && <Marker position={arrow.point} interactive={false} icon={L.divIcon({className:'route-arrow',html:`<span style="transform:rotate(${arrow.angle}deg)">▲</span>`,iconSize:[22,22],iconAnchor:[11,11]})} />}
+      {returnPath.length > 1 && <Polyline positions={returnPath} pathOptions={{color:'#d78154',weight:3,dashArray:'5 9'}} />}
+      {route?.turn_back?.abort_points?.map((point,i) => point.position && <CircleMarker key={i} center={pos(point.position)} radius={5} pathOptions={{color:'#292c28',fillColor:'#f3ce74',fillOpacity:1,weight:2}}><Popup>Return checkpoint {i+1}</Popup></CircleMarker>)}
+      <Endpoint point={start} label="A" onDrag={onStartChange} />
+      {goal ? <Endpoint point={goal} label="B" onDrag={onGoalChange} /> : destination && <Endpoint point={{lat:destination[0],lng:destination[1]}} label="B" draggable={false} />}
+      <ScaleControl position="bottomright" imperial={false} /><ZoomControl position="bottomright" />
+    </MapContainer>
+    <div className="trail-area-label">Planning area</div>
+    {mode === 'route' && <div className="map-hint" role="status">{editPoint === 'goal' ? 'Click to set destination B' : 'Click anywhere to place A'}</div>}
+    {outside && <div className="trail-map-notice" role="status">That spot is outside the area we can plan routes for.</div>}
+    {tileError && <div className="trail-map-notice" role="status">Some NASA basemap tiles could not load.</div>}
+    {imageError && <div className="map-data-error" role="alert">{imageError} overlay is unavailable.<button type="button" onClick={()=>setImageError('')}>Dismiss</button></div>}
+    <Legend layers={layerList} activeLayers={activeLayers} />
+  </div></section>
 }
