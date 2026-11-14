@@ -1,6 +1,7 @@
 """Offline FastAPI tests for the Ask-the-Map service."""
 
 import pytest
+import httpx
 from fastapi.testclient import TestClient
 
 from ai_guide import main
@@ -130,6 +131,24 @@ def test_planner_error_returns_error_status_not_http_500(client, monkeypatch):
     assert response.json()["route"]["status"] == "error"
     assert response.json()["route"]["path"] == []
     assert response.json()["explanation"] == "The planner's terrain data is temporarily unavailable."
+
+
+def test_real_planner_connection_error_returns_error_without_mock(client, monkeypatch):
+    """A real-mode connection failure becomes a friendly error response, not a mock."""
+    monkeypatch.setenv("USE_MOCK", "0")
+
+    async def fail_connect(self, *args, **kwargs):
+        raise httpx.ConnectError("offline")
+
+    monkeypatch.setattr(httpx.AsyncClient, "post", fail_connect)
+    response = client.post("/ask", json={"question": "Take me to ice."})
+    body = response.json()
+    assert response.status_code == 200
+    assert body["route"]["status"] == "error"
+    assert body["route"]["path"] == []
+    assert body["route"]["planner"] is None
+    assert body["explanation"] == "I could not reach the route planner. Please check that it is running."
+    assert "_mock" not in response.text
 
 
 def test_question_length_over_500_is_rejected(client):

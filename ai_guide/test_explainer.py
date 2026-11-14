@@ -226,3 +226,42 @@ def test_explain_returns_template_when_llm_fails(monkeypatch):
     assert source == "fallback"
     assert "feasible" in text
     assert "distance: 6" in text
+
+
+@pytest.mark.parametrize("status", ["infeasible", "search_limit"])
+def test_failed_planner_status_never_calls_llm(monkeypatch, status):
+    """Failed planner outcomes are always explained by the non-LLM template."""
+    called = []
+
+    async def fail_if_called(system, user):
+        called.append(True)
+        raise AssertionError("LLM should not be called for failed planner status")
+
+    monkeypatch.setattr(explainer, "complete_text", fail_if_called)
+    result = {"status": status, "reason": "no_feasible_route", "_mock": False}
+    text, source = asyncio.run(
+        explainer.explain("Can I reach ice?", {}, result, [])
+    )
+    assert called == []
+    assert source == "fallback"
+    assert "NOT possible" in text
+    assert "no_feasible_route" in text
+
+
+def test_ok_status_discards_llm_text_that_says_not_possible(monkeypatch):
+    """Contradictory negative wording cannot override a successful planner result."""
+    async def falsely_negative(system, user):
+        return "The trip is not possible and cannot reach ice."
+
+    monkeypatch.setattr(explainer, "complete_text", falsely_negative)
+    text, source = asyncio.run(
+        explainer.explain(
+            "Find ice.",
+            {"intent": "route", "goal_type": "ice"},
+            _load("mock_route.json"),
+            [],
+        )
+    )
+    assert source == "fallback"
+    assert "route is feasible" in text
+    assert "not possible" not in text.lower()
