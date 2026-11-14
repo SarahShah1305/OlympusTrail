@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import re
 from collections.abc import Mapping
 from decimal import Decimal
 from pathlib import Path
@@ -103,6 +104,23 @@ def test_ok_template_mentions_distance_and_sample_data():
     assert not any(token in text.lower() for token in ("{", "}", "lat", "lon"))
 
 
+def test_ok_template_uses_plain_words_and_units():
+    """Success template uses readable labels and units, not planner field names."""
+    summary = explainer.summarize_result(_load("mock_route.json"))
+    text = explainer.template_explanation(summary, [])
+
+    for phrase in (
+        "distance: 6 km",
+        "trip time: 2.2 h",
+        "oxygen left: 1.8 h",
+        "battery left: 588.8 Wh",
+        "steepest slope: 0.8 degrees",
+        "coldest temperature: 201.2 K",
+    ):
+        assert phrase in text
+    assert not re.search(r"\b[A-Za-z][A-Za-z0-9]*_[A-Za-z0-9_]*\b", text)
+
+
 def test_infeasible_template_says_trip_is_not_possible():
     """Failed fallback template says not possible and includes planner reason."""
     summary = explainer.summarize_result(_load("mock_infeasible.json"))
@@ -110,6 +128,17 @@ def test_infeasible_template_says_trip_is_not_possible():
     assert "NOT possible" in text
     assert "no_feasible_route" in text
     assert "more oxygen or battery" in text
+
+
+def test_infeasible_template_wording_is_unchanged():
+    """Failed route wording remains explicit and includes the same limits note."""
+    summary = explainer.summarize_result(_load("mock_infeasible.json"))
+    text = explainer.template_explanation(summary, [])
+    expected = (
+        "The trip is NOT possible (no_feasible_route). Try with more oxygen or "
+        f"battery and check the plan again. {explainer._LIMITS}"
+    )
+    assert text == expected
 
 
 def test_postcheck_adds_warning_for_invented_number(monkeypatch):
@@ -212,6 +241,25 @@ def test_postcheck_accepts_numbers_found_in_summary(monkeypatch):
     assert "6 km" in text
     assert source == "llm"
     assert warnings == []
+
+
+def test_underscore_field_name_falls_back_to_template(monkeypatch):
+    """LLM field names are replaced with the readable fixed template."""
+    async def field_name_complete_text(system, user):
+        return "The distance_km is 6."
+
+    monkeypatch.setattr(explainer, "complete_text", field_name_complete_text)
+    text, source = asyncio.run(
+        explainer.explain(
+            "Find ice.",
+            {"intent": "route", "goal_type": "ice"},
+            _load("mock_route.json"),
+            [],
+        )
+    )
+    assert source == "fallback"
+    assert "distance: 6 km" in text
+    assert "distance_km" not in text
 
 
 def test_explain_returns_template_when_llm_fails(monkeypatch):
