@@ -44,7 +44,10 @@ export default function AskPanel({ onRoute, getMapStart }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: text,
-          map_start: getMapStart ? getMapStart() : null,
+          map_start: (() => {
+            const mapStart = getMapStart?.()
+            return mapStart ? { lon: mapStart[1], lat: mapStart[0] } : null
+          })(),
         }),
       })
       if (!response.ok) throw new Error('AI guide request failed')

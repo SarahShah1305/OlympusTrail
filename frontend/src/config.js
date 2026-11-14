@@ -1,3 +1,5 @@
+export const AI_API_URL = 'http://localhost:8001'
+
 export const config = {
   region: {
     name: 'Arcadia Planitia',

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getSites, planRoute, sendChat } from './api/client'
 import { config, layerDefinitions } from './config'
+import AskPanel from './components/AskPanel'
 import LayerPanel from './components/LayerPanel'
 import MapView from './components/MapView'
 import MissionPanel from './components/MissionPanel'
@@ -40,6 +41,7 @@ export default function App() {
   const [oxygenHours, setOxygenHours] = useState('4')
   const [avoid, setAvoid] = useState([])
   const [route, setRoute] = useState(null)
+  const [askRoute, setAskRoute] = useState(null)
   const [routeLoading, setRouteLoading] = useState(false)
   const [routeError, setRouteError] = useState('')
   const [messages, setMessages] = useState(initialMessages)
@@ -91,6 +93,7 @@ export default function App() {
   }
 
   const handleMapClick = (point) => {
+    setAskRoute(null)
     if (!start || goal) {
       setStart({ lat: point.lat, lng: point.lng })
       setGoal(null)
@@ -103,16 +106,26 @@ export default function App() {
   const handleStartChange = (point) => {
     setStart(point)
     setRoute(null)
+    setAskRoute(null)
   }
   const handleGoalChange = (point) => {
     setGoal(point)
     setRoute(null)
+    setAskRoute(null)
   }
+
+  const handleRoute = (result) => {
+    setAskRoute(result)
+    setRoute(null)
+  }
+
+  const getMapStart = () => start ? [start.lat, start.lng] : null
 
   const handlePlanRoute = async () => {
     if (!start || !goal) return
     setRouteLoading(true)
     setRouteError('')
+    setAskRoute(null)
     try {
       const result = await planRoute({
         start,
@@ -202,28 +215,34 @@ export default function App() {
           onMapClick={handleMapClick}
           onStartChange={handleStartChange}
           onGoalChange={handleGoalChange}
-          route={route}
+          route={askRoute ? { path: askRoute.path } : route}
           selectedSite={selectedSite}
           layerMetadata={layerMetadata}
           overlayOpacity={overlayOpacity}
         />
-        <MissionPanel
-          mode={mode}
-          route={route}
-          start={start}
-          goal={goal}
-          oxygenHours={oxygenHours}
-          onOxygenChange={setOxygenHours}
-          avoid={avoid}
-          onAvoidToggle={toggleAvoid}
-          onPlanRoute={handlePlanRoute}
-          routeLoading={routeLoading}
-          routeError={routeError}
-          messages={messages}
-          onSendMessage={handleSendMessage}
-          chatLoading={chatLoading}
-          chatError={chatError}
-        />
+        {mode === 'ask' ? (
+          <aside className="side-panel right-panel" aria-label="Ask the map">
+            <AskPanel onRoute={handleRoute} getMapStart={getMapStart} />
+          </aside>
+        ) : (
+          <MissionPanel
+            mode={mode}
+            route={route}
+            start={start}
+            goal={goal}
+            oxygenHours={oxygenHours}
+            onOxygenChange={setOxygenHours}
+            avoid={avoid}
+            onAvoidToggle={toggleAvoid}
+            onPlanRoute={handlePlanRoute}
+            routeLoading={routeLoading}
+            routeError={routeError}
+            messages={messages}
+            onSendMessage={handleSendMessage}
+            chatLoading={chatLoading}
+            chatError={chatError}
+          />
+        )}
       </main>
     </div>
   )
