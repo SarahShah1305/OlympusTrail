@@ -14,7 +14,11 @@ _LIMITS = (
     "500 m; candidate shelters are unverified terrain candidates."
 )
 _SYSTEM_PROMPT = (
-    "Explain the planner result in plain language using ONLY the numbers given in "
+    "Write 3 to 5 short sentences in plain words for an astronaut. Never write "
+    "field names or underscores. Say ‘distance’, ‘trip time’, ‘oxygen left’, "
+    "‘battery left’, ‘steepest slope’, and ‘coldest temperature’. Use only numbers "
+    "from the summary and keep units (km, h, Wh, degrees, K). Explain the planner "
+    "result using ONLY the numbers given in "
     "the summary. Never invent data. Use the numbers exactly as given in the facts. "
     "Do not recalculate, add digits or round them differently. Keep the answer under "
     "120 words. If status is "
@@ -30,6 +34,7 @@ _NUMBER_RE = re.compile(
     r"(?<![A-Za-z0-9_])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?(?![A-Za-z0-9_])"
 )
 _LIST_MARKER_RE = re.compile(r"(?m)^[ \t]*(?:[-*][ \t]*)?\d+[.)](?:[ \t]+|$)")
+_UNDERSCORE_WORD_RE = re.compile(r"\b[A-Za-z][A-Za-z0-9]*_[A-Za-z0-9_]*\b")
 _QUESTION_BUDGET_PATTERNS = (
     re.compile(r"\b(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|h)\s*(?:of\s*)?oxygen\b", re.I),
     re.compile(r"\b(\d+(?:\.\d+)?)\s*%\s*battery\b", re.I),
@@ -193,23 +198,23 @@ def template_explanation(summary: dict, warnings: List[str]) -> str:
         return text
 
     details = []
-    for key, label, places in (
-        ("distance_km", "distance", 1),
-        ("hours", "travel time", 1),
-        ("oxygen_remaining_hours", "oxygen remaining", 1),
-        ("battery_remaining_wh", "battery remaining", 1),
-        ("maximum_slope_deg", "maximum slope", 1),
-        ("minimum_temperature_k", "minimum temperature", 1),
-        ("maximum_dust_optical_depth", "maximum dust optical depth", 2),
-        ("radiation_reference_msv", "radiation reference", 2),
-        ("oxygen_reserve_hours", "oxygen reserve", 1),
-        ("battery_reserve_wh", "battery reserve", 1),
-        ("turnaround_distance_km", "turnaround distance", 1),
-        ("turnaround_elapsed_hours", "turnaround time", 1),
+    for key, label, places, unit in (
+        ("distance_km", "distance", 1, " km"),
+        ("hours", "trip time", 1, " h"),
+        ("oxygen_remaining_hours", "oxygen left", 1, " h"),
+        ("battery_remaining_wh", "battery left", 1, " Wh"),
+        ("maximum_slope_deg", "steepest slope", 1, " degrees"),
+        ("minimum_temperature_k", "coldest temperature", 1, " K"),
+        ("maximum_dust_optical_depth", "dust optical depth", 2, ""),
+        ("radiation_reference_msv", "radiation reference", 2, " mSv"),
+        ("oxygen_reserve_hours", "oxygen reserve", 1, " h"),
+        ("battery_reserve_wh", "battery reserve", 1, " Wh"),
+        ("turnaround_distance_km", "turnaround distance", 1, " km"),
+        ("turnaround_elapsed_hours", "turnaround time", 1, " h"),
     ):
         value = _format_number(summary, key, places)
         if value is not None:
-            details.append(f"{label}: {value}")
+            details.append(f"{label}: {value}{unit}")
     candidate_count = summary.get("candidate_shelters_count")
     if isinstance(candidate_count, int):
         details.append(f"candidate shelters: {candidate_count} unverified terrain candidates")
@@ -235,6 +240,8 @@ async def explain(question: str, parsed: Any, result: dict, warnings: List[str])
         if not isinstance(text, str) or not text.strip():
             raise ValueError("LLM returned no explanation")
         text = text.strip()
+        if _UNDERSCORE_WORD_RE.search(text):
+            return template_explanation(summary, warnings), "fallback"
         lowered_text = text.lower()
         if any(phrase in lowered_text for phrase in ("not possible", "cannot reach", "infeasible")):
             return template_explanation(summary, warnings), "fallback"
