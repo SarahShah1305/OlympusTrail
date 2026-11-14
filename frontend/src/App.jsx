@@ -119,7 +119,12 @@ export default function App() {
     setRoute(null)
   }
 
-  const getMapStart = () => start ? [start.lat, start.lng] : null
+  const getMapStart = () => {
+    if (!start || !Number.isFinite(start.lat) || !Number.isFinite(start.lng)) return null
+    const [[minLat, minLng], [maxLat, maxLng]] = config.region.bounds
+    if (start.lat < minLat || start.lat > maxLat || start.lng < minLng || start.lng > maxLng) return null
+    return [start.lat, start.lng]
+  }
 
   const handlePlanRoute = async () => {
     if (!start || !goal) return
@@ -216,6 +221,7 @@ export default function App() {
           onStartChange={handleStartChange}
           onGoalChange={handleGoalChange}
           route={askRoute ? { path: askRoute.path } : route}
+          askRoutePath={askRoute?.path}
           selectedSite={selectedSite}
           layerMetadata={layerMetadata}
           overlayOpacity={overlayOpacity}
