@@ -1,0 +1,495 @@
+{
+  "request": {
+    "start": {
+      "row": 643,
+      "col": 1226,
+      "lon": null,
+      "lat": null
+    },
+    "goal": null,
+    "goal_type": "ice",
+    "ice_min_consistency": 0.75,
+    "min_goal_distance_km": 3.0,
+    "oxygen_hours": 4.0,
+    "battery_wh": 1000.0,
+    "reserve_fraction": 0.2,
+    "return_to_start": true,
+    "mode": "scenario",
+    "local_time_h": 6,
+    "avoid": [],
+    "weights": {
+      "slope": 0.4,
+      "radiation": 0.2,
+      "temperature": 0.25,
+      "dust": 0.15
+    },
+    "parameters": {
+      "walking_speed_kmh": 3.0,
+      "base_power_w": 100.0,
+      "movement_energy_wh_km": 10.0,
+      "cold_power_w_per_k": 2.0,
+      "cold_reference_k": 230.0,
+      "max_slope_deg": 15.0,
+      "max_dust_optical_depth": 1.0
+    },
+    "max_search_labels": 100000
+  },
+  "data": {
+    "mode": "scenario",
+    "dataset": "arcadia_500m",
+    "grid_spacing_m": 500.0,
+    "scenario": {
+      "id": "mcd62_ls90",
+      "season_ls_deg": 90,
+      "local_time_h": 6,
+      "available_local_times_h": [
+        0,
+        6,
+        12,
+        18
+      ],
+      "dust": "MCD climatology average solar"
+    },
+    "thermal_observation_coverage": 0.24004895475790824,
+    "radiation_source": "uniform Gale RAD reference assumption, extrapolated to Arcadia",
+    "shielding_available": false,
+    "shielding_kind": null,
+    "terrain_obstruction_available": true,
+    "radiation_protection_validated": false,
+    "regional_radiation_measurements_available": false,
+    "shelter_candidate_count": 50,
+    "verified_shelter_count": 0,
+    "cave_candidate_count": 0,
+    "assumptions": [
+      "500 m MOLA grid: resolves km-scale craters and scarps, not boulders or rover-scale hazards.",
+      "Static MCD climate scenario at the requested local time; conditions do not change during the trip.",
+      "Radiation uses a uniform Gale dose-equivalent reference; no Arcadia calibration, terrain attenuation or solar particle events.",
+      "Blocked sky fraction measures DEM geometry and is not converted into radiation protection or a shielding score.",
+      "Ice consistency is SWIM's ~3 km product resampled; it is not finer than 3 km.",
+      "Terrain shelter candidates are walls that hide part of the sky, not caves or verified shelters.",
+      "Walking and battery parameters are illustrative, pending Person 5 validation."
+    ],
+    "excluded_risk_components": []
+  },
+  "risk_weights": {
+    "slope": 0.4,
+    "temperature": 0.25,
+    "dust": 0.15,
+    "radiation": 0.2
+  },
+  "budget": {
+    "oxygen_hours": 4.0,
+    "battery_wh": 1000.0,
+    "reserve_fraction": 0.2,
+    "return_to_start": true
+  },
+  "algorithm": "multi-label resource-constrained Dijkstra",
+  "route_model": "symmetric static edges; round-trip return reverses outbound path",
+  "search": {
+    "expanded_labels": 167,
+    "created_labels": 319
+  },
+  "status": "ok",
+  "reason": null,
+  "route": {
+    "outbound": [
+      {
+        "row": 643,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.571882886901435
+      },
+      {
+        "row": 644,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.56344758447238
+      },
+      {
+        "row": 645,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.555012282043315
+      },
+      {
+        "row": 646,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.546576979614265
+      },
+      {
+        "row": 647,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.5381416771852
+      },
+      {
+        "row": 648,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.52970637475615
+      },
+      {
+        "row": 649,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.52127107232709
+      }
+    ],
+    "return_path": [
+      {
+        "row": 649,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.52127107232709
+      },
+      {
+        "row": 648,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.52970637475615
+      },
+      {
+        "row": 647,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.5381416771852
+      },
+      {
+        "row": 646,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.546576979614265
+      },
+      {
+        "row": 645,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.555012282043315
+      },
+      {
+        "row": 644,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.56344758447238
+      },
+      {
+        "row": 643,
+        "col": 1226,
+        "lon": -157.23023238448738,
+        "lat": 52.571882886901435
+      }
+    ],
+    "destination": {
+      "row": 649,
+      "col": 1226,
+      "lon": -157.23023238448738,
+      "lat": 52.52127107232709
+    },
+    "profile": [
+      {
+        "position": {
+          "row": 643,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.571882886901435
+        },
+        "elapsed_hours": 0.0,
+        "distance_km": 0.0,
+        "oxygen_remaining_hours": 4.0,
+        "battery_remaining_wh": 1000.0
+      },
+      {
+        "position": {
+          "row": 644,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.56344758447238
+        },
+        "elapsed_hours": 0.18193759613986477,
+        "distance_km": 0.5000000000001547,
+        "oxygen_remaining_hours": 3.8180624038601354,
+        "battery_remaining_wh": 966.3555722984156
+      },
+      {
+        "position": {
+          "row": 645,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.555012282043315
+        },
+        "elapsed_hours": 0.3660317248976369,
+        "distance_km": 1.0000000000003093,
+        "oxygen_remaining_hours": 3.633968275102363,
+        "battery_remaining_wh": 932.3679690955578
+      },
+      {
+        "position": {
+          "row": 646,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.546576979614265
+        },
+        "elapsed_hours": 0.5508935796097231,
+        "distance_km": 1.5000000000000868,
+        "oxygen_remaining_hours": 3.449106420390277,
+        "battery_remaining_wh": 898.2558149953619
+      },
+      {
+        "position": {
+          "row": 647,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.5381416771852
+        },
+        "elapsed_hours": 0.7360245053346841,
+        "distance_km": 2.0000000000002416,
+        "oxygen_remaining_hours": 3.263975494665316,
+        "battery_remaining_wh": 864.0976179220879
+      },
+      {
+        "position": {
+          "row": 648,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.52970637475615
+        },
+        "elapsed_hours": 0.9236356113725528,
+        "distance_km": 2.499999999999642,
+        "oxygen_remaining_hours": 3.0763643886274474,
+        "battery_remaining_wh": 829.5450727566733
+      },
+      {
+        "position": {
+          "row": 649,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.52127107232709
+        },
+        "elapsed_hours": 1.1149092892185521,
+        "distance_km": 3.0000000000001736,
+        "oxygen_remaining_hours": 2.885090710781448,
+        "battery_remaining_wh": 794.4118071585765
+      },
+      {
+        "position": {
+          "row": 648,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.52970637475615
+        },
+        "elapsed_hours": 1.3061829670645515,
+        "distance_km": 3.500000000000705,
+        "oxygen_remaining_hours": 2.6938170329354483,
+        "battery_remaining_wh": 759.2785415604798
+      },
+      {
+        "position": {
+          "row": 647,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.5381416771852
+        },
+        "elapsed_hours": 1.4937940731024202,
+        "distance_km": 4.000000000000106,
+        "oxygen_remaining_hours": 2.5062059268975796,
+        "battery_remaining_wh": 724.7259963950652
+      },
+      {
+        "position": {
+          "row": 646,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.546576979614265
+        },
+        "elapsed_hours": 1.678924998827381,
+        "distance_km": 4.500000000000261,
+        "oxygen_remaining_hours": 2.321075001172619,
+        "battery_remaining_wh": 690.5677993217912
+      },
+      {
+        "position": {
+          "row": 645,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.555012282043315
+        },
+        "elapsed_hours": 1.8637868535394673,
+        "distance_km": 5.000000000000038,
+        "oxygen_remaining_hours": 2.1362131464605327,
+        "battery_remaining_wh": 656.4556452215953
+      },
+      {
+        "position": {
+          "row": 644,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.56344758447238
+        },
+        "elapsed_hours": 2.0478809822972392,
+        "distance_km": 5.500000000000193,
+        "oxygen_remaining_hours": 1.9521190177027608,
+        "battery_remaining_wh": 622.4680420187375
+      },
+      {
+        "position": {
+          "row": 643,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.571882886901435
+        },
+        "elapsed_hours": 2.229818578437104,
+        "distance_km": 6.000000000000347,
+        "oxygen_remaining_hours": 1.7701814215628962,
+        "battery_remaining_wh": 588.8236143171531
+      }
+    ],
+    "geojson": {
+      "type": "Feature",
+      "properties": {
+        "mode": "scenario"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -157.23023238448738,
+            52.571882886901435
+          ],
+          [
+            -157.23023238448738,
+            52.56344758447238
+          ],
+          [
+            -157.23023238448738,
+            52.555012282043315
+          ],
+          [
+            -157.23023238448738,
+            52.546576979614265
+          ],
+          [
+            -157.23023238448738,
+            52.5381416771852
+          ],
+          [
+            -157.23023238448738,
+            52.52970637475615
+          ],
+          [
+            -157.23023238448738,
+            52.52127107232709
+          ],
+          [
+            -157.23023238448738,
+            52.52970637475615
+          ],
+          [
+            -157.23023238448738,
+            52.5381416771852
+          ],
+          [
+            -157.23023238448738,
+            52.546576979614265
+          ],
+          [
+            -157.23023238448738,
+            52.555012282043315
+          ],
+          [
+            -157.23023238448738,
+            52.56344758447238
+          ],
+          [
+            -157.23023238448738,
+            52.571882886901435
+          ]
+        ]
+      }
+    }
+  },
+  "metrics": {
+    "hours": 2.229818578437104,
+    "battery_wh": 411.1763856828469,
+    "distance_km": 6.000000000000347,
+    "radiation_reference_msv": 0.062249100763050014,
+    "weighted_cost": 13453.08929034721,
+    "oxygen_remaining_hours": 1.7701814215628962,
+    "battery_remaining_wh": 588.8236143171531,
+    "maximum_slope_deg": 0.7926056385040283,
+    "minimum_temperature_k": 201.2250213623047,
+    "maximum_temperature_k": 201.28448486328125,
+    "maximum_dust_optical_depth": 0.25310733914375305
+  },
+  "turn_back": {
+    "action": "reverse_outbound_path",
+    "return_is_reserved": true,
+    "turnaround": {
+      "row": 649,
+      "col": 1226,
+      "lon": -157.23023238448738,
+      "lat": 52.52127107232709
+    },
+    "candidate_shelters": [],
+    "abort_points": [
+      {
+        "fraction_of_outbound": 0.25,
+        "position": {
+          "row": 645,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.555012282043315
+        },
+        "elapsed_hours": 0.3660317248976369,
+        "distance_km": 1.0000000000003093,
+        "hours_to_return": 0.3660317248976369,
+        "oxygen_left_if_abort_hours": 3.267936550204726,
+        "battery_left_if_abort_wh": 864.7359381911156
+      },
+      {
+        "fraction_of_outbound": 0.5,
+        "position": {
+          "row": 647,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.5381416771852
+        },
+        "elapsed_hours": 0.7360245053346841,
+        "distance_km": 2.0000000000002416,
+        "hours_to_return": 0.7360245053346841,
+        "oxygen_left_if_abort_hours": 2.527950989330632,
+        "battery_left_if_abort_wh": 728.1952358441758
+      },
+      {
+        "fraction_of_outbound": 0.75,
+        "position": {
+          "row": 648,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.52970637475615
+        },
+        "elapsed_hours": 0.9236356113725528,
+        "distance_km": 2.499999999999642,
+        "hours_to_return": 0.9236356113725528,
+        "oxygen_left_if_abort_hours": 2.1527287772548944,
+        "battery_left_if_abort_wh": 659.0901455133467
+      },
+      {
+        "fraction_of_outbound": 1.0,
+        "position": {
+          "row": 649,
+          "col": 1226,
+          "lon": -157.23023238448738,
+          "lat": 52.52127107232709
+        },
+        "elapsed_hours": 1.1149092892185521,
+        "distance_km": 3.0000000000001736,
+        "hours_to_return": 1.1149092892185521,
+        "oxygen_left_if_abort_hours": 1.7701814215628957,
+        "battery_left_if_abort_wh": 588.823614317153
+      }
+    ],
+    "oxygen_reserve_hours": 0.8,
+    "battery_reserve_wh": 200.0
+  }
+}
