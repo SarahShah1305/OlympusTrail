@@ -326,6 +326,19 @@ export default function MapView({
   mapNotice,
   onDismissNotice,
 }) {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const controls = canvas.querySelector(".trail-layer-controls");
+    const observer = new ResizeObserver(() =>
+      canvas.style.setProperty(
+        "--layer-bottom",
+        `${controls.offsetTop + controls.offsetHeight + 8}px`,
+      ),
+    );
+    observer.observe(controls);
+    return () => observer.disconnect();
+  }, []);
   const [tileError, setTileError] = useState(false);
   const tileFailures = useRef(0);
   useEffect(() => {
@@ -389,7 +402,7 @@ export default function MapView({
   const pathKey = outbound.map((point) => point.join(",")).join(";");
   return (
     <section className="map-column" aria-label="Mars planning map">
-      <div className="map-canvas">
+      <div className="map-canvas" ref={canvasRef}>
         <MapContainer
           center={config.region.center}
           zoom={config.region.zoom}

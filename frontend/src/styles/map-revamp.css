@@ -496,3 +496,14 @@
     display: inline;
   }
 }
+
+.leaflet-container .leaflet-control-zoom a {
+  width: 44px;
+  height: 44px;
+  line-height: 42px;
+}
+@media (max-width: 780px) {
+  .map-notices {
+    top: var(--layer-bottom, 115px);
+  }
+}

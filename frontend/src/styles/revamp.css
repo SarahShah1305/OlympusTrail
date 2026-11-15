@@ -588,3 +588,16 @@
     padding-block: 4px;
   }
 }
+@media (max-width: 780px) {
+  .revamp-header {
+    gap: 0 4px;
+  }
+  .wordmark {
+    font-size: 15px;
+  }
+  .example-trigger,
+  .guide-trigger {
+    padding-inline: 5px;
+    font-size: 11px;
+  }
+}
