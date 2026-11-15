@@ -176,8 +176,8 @@ def _planner_url() -> str:
     configured = os.getenv("PLANNER_URL")
     if configured:
         return configured.rstrip("/")
-    # In a single-origin Vercel deployment the guide calls the planner through
-    # the current deployment URL. Local development keeps the localhost default.
+    # HTTP is retained for separate local processes or an explicit override.
+    # Prefer the production alias over a potentially protected deployment URL.
     vercel_url = os.getenv("VERCEL_PROJECT_PRODUCTION_URL") or os.getenv("VERCEL_URL")
     if vercel_url:
         return f"https://{vercel_url}".rstrip("/")

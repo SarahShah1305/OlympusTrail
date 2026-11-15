@@ -30,6 +30,8 @@ class RasterLayers(MutableMapping):
         self.lock = RLock()
 
     def __getitem__(self, name):
+        if name in self.cache:
+            return self.cache[name]
         with self.lock:
             if name not in self.cache:
                 path = self.paths[name]
