@@ -1,5 +1,6 @@
 import AskPanel from "./AskPanel";
 import SourcesPanel from "./SourcesPanel";
+import { useEffect, useRef } from "react";
 
 export default function InfoDrawer({
   drawer,
@@ -9,18 +10,76 @@ export default function InfoDrawer({
   sourceMode,
   onChangeSource,
 }) {
+  const dialogRef = useRef(null);
+  const closeRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+  useEffect(() => {
+    if (!drawer) return;
+    const trigger = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+    function handleKey(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onCloseRef.current();
+      }
+      if (event.key !== "Tab") return;
+      const controls = [
+        ...dialogRef.current.querySelectorAll(
+          'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]',
+        ),
+      ].filter((element) => element.getClientRects().length);
+      const first = controls[0];
+      const last = controls.at(-1);
+      if (!first) {
+        event.preventDefault();
+        return;
+      }
+      if (
+        event.shiftKey &&
+        (document.activeElement === first ||
+          !dialogRef.current.contains(document.activeElement))
+      ) {
+        event.preventDefault();
+        last.focus();
+      } else if (
+        !event.shiftKey &&
+        (document.activeElement === last ||
+          !dialogRef.current.contains(document.activeElement))
+      ) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = previousOverflow;
+      if (trigger?.isConnected) trigger.focus();
+    };
+  }, [drawer]);
   if (!drawer) return null;
   const guide = drawer === "guide";
   return (
     <div className="drawer-backdrop" onClick={onClose}>
       <aside
+        ref={dialogRef}
         className="info-drawer"
         role="dialog"
         aria-modal="true"
         aria-label={guide ? "Ask the guide" : "About this data"}
         onClick={(event) => event.stopPropagation()}
       >
-        <button className="close-drawer" type="button" onClick={onClose}>
+        <button
+          ref={closeRef}
+          className="close-drawer"
+          type="button"
+          onClick={onClose}
+        >
           Close
         </button>
         {guide ? (

@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import * as config from "../config";
-import { isVoiceSupported, startListening } from "../voice";
+import {
+  isVoiceSupported,
+  startListening,
+  UNSUPPORTED_MESSAGE,
+} from "../voice";
 
 const API_URL = config.AI_API_URL;
 const EXAMPLE_QUESTIONS = [
@@ -197,7 +201,7 @@ export default function AskPanel({
           title={
             voiceSupported
               ? "Transcribe a question for review"
-              : "Voice input is not supported"
+              : UNSUPPORTED_MESSAGE
           }
           disabled={!voiceSupported || loading}
           style={{ minWidth: 40, minHeight: 40 }}
@@ -215,6 +219,8 @@ export default function AskPanel({
           {loading ? "Sending…" : "Send"}
         </button>
       </form>
+
+      {!voiceSupported && <p role="status">{UNSUPPORTED_MESSAGE}</p>}
 
       {listening && (
         <p role="status" style={{ marginTop: 8, fontSize: 14 }}>
