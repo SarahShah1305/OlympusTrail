@@ -32,6 +32,7 @@ export default function AskPanel({
   const [error, setError] = useState("");
   const [voiceError, setVoiceError] = useState("");
   const [listening, setListening] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState("");
   const [connectionState, setConnectionState] = useState("unchecked");
   const stopListeningRef = useRef(null);
   const requestVersion = useRef(0);
@@ -119,7 +120,9 @@ export default function AskPanel({
     }
 
     setListening(true);
+    setVoiceStatus("Starting voice input…");
     stopListeningRef.current = startListening({
+      onStatus: setVoiceStatus,
       onResult: (spokenText) => {
         setQuestion(spokenText.slice(0, 500));
         setVoiceError(
@@ -224,7 +227,7 @@ export default function AskPanel({
 
       {listening && (
         <p role="status" style={{ marginTop: 8, fontSize: 14 }}>
-          Listening…
+          {voiceStatus || "Listening…"}
         </p>
       )}
       {loading && (
