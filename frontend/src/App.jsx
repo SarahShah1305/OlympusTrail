@@ -299,6 +299,7 @@ export default function App() {
                 onEditPoint={setEditPoint}
                 onReset={reset}
                 onPlanRoute={calculate}
+                onClearExclusionsRetry={() => { setAvoid([]); void calculate({ avoid: [] }); }}
                 route={route}
                 routeLoading={routeLoading}
                 routeError={routeError}

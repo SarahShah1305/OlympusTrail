@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import * as config from "../config";
+import { request } from "../api/client";
+import { AI_API_URL } from "../config";
 import {
   isVoiceSupported,
   startListening,
   UNSUPPORTED_MESSAGE,
 } from "../voice";
 
-const API_URL = config.AI_API_URL;
 const EXAMPLE_QUESTIONS = [
   "Plan a route that fits 4 hours of oxygen.",
   "How can I reach the nearest ice?",
@@ -69,21 +69,10 @@ export default function AskPanel({
 
     try {
       const mapStart = getMapStart?.();
-      const response = await fetch(
-        `${API_URL ? API_URL.replace(/\/$/, "") : ""}/ask`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: AbortSignal.timeout(60000),
-          body: JSON.stringify({
-            question: text,
-            map_start: mapStart ? { lon: mapStart[1], lat: mapStart[0] } : null,
-          }),
-        },
-      );
-      if (!response.ok) throw new Error("Planner request failed");
-
-      const data = await response.json();
+      const data = await request("/ask", {
+        method: "POST",
+        body: JSON.stringify({ question: text, map_start: mapStart ? { lon: mapStart[1], lat: mapStart[0] } : null }),
+      }, AI_API_URL);
       if (version !== requestVersion.current) return;
       setAnswer(data);
       setConnectionState(
@@ -98,12 +87,10 @@ export default function AskPanel({
       ) {
         onRoute?.(route);
       }
-    } catch {
+    } catch (error) {
       if (version !== requestVersion.current) return;
       setConnectionState("unavailable");
-      setError(
-        "The guide could not answer. Check your trip with the planner or try again.",
-      );
+      setError(error.message);
     } finally {
       if (version === requestVersion.current) setLoading(false);
     }

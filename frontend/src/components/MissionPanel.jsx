@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BLOCKED_START } from "../api/client";
 import { presets, timeOfDay, tripVerdict } from "../mission.js";
 
 const duration = (value) => {
@@ -97,6 +98,7 @@ export default function MissionPanel(props) {
     onSetPoint,
     onReset,
     onPlanRoute,
+    onClearExclusionsRetry,
     route,
     routeLoading,
     routeError,
@@ -318,6 +320,9 @@ export default function MissionPanel(props) {
             <p className="inline-error" role="alert">
               {routeError}
             </p>
+          )}
+          {routeError === BLOCKED_START && (
+            <button type="button" className="secondary-button" disabled={routeLoading} onClick={onClearExclusionsRetry}>Clear exclusions and retry</button>
           )}
           {route && (
             <>

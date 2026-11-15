@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css}\" \"tests/**/*.js\" vite.config.js playwright.config.js package.json index.html",
     "preview": "vite preview",
     "test:smoke": "playwright test tests/smoke.spec.js",
-    "test:unit": "node --test src/api/contract.test.js src/mission.test.js src/briefing.test.js src/voice.test.js"
+    "test:unit": "node --test src/api/client.test.js src/api/contract.test.js src/mission.test.js src/briefing.test.js src/voice.test.js"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
