@@ -6,6 +6,8 @@ import os
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
+from collections.abc import MutableMapping
+from threading import RLock
 
 import numpy as np
 import rasterio
@@ -17,6 +19,48 @@ from .models import Position, RouteRequest, SiteRequest
 
 MARS_GEOGRAPHIC = CRS.from_string("+proj=longlat +a=3396190 +b=3396190 +no_defs")
 LOCAL_TIMES = (0, 6, 12, 18)
+
+
+class RasterLayers(MutableMapping):
+    """Read aligned source rasters only when used; retain source float32 precision."""
+    def __init__(self, paths, geometry):
+        self.paths = paths
+        self.geometry = geometry
+        self.cache = {}
+        self.lock = RLock()
+
+    def __getitem__(self, name):
+        with self.lock:
+            if name not in self.cache:
+                path = self.paths[name]
+                for loaded, values in self.cache.items():
+                    if self.paths.get(loaded) == path:
+                        self.cache[name] = values
+                        return values
+                with rasterio.Env(GDAL_CACHEMAX=16 * 1024 * 1024), rasterio.open(path) as src:
+                    if (src.shape, src.transform, src.crs) != self.geometry or src.count != 1:
+                        raise ValueError(f"Misaligned or multiband layer: {path}")
+                    # Source values are float32. Arithmetic that affects ranking
+                    # or route decisions is explicitly promoted to float64 below.
+                    dtype = "float64" if src.dtypes[0] == "float64" else "float32"
+                    self.cache[name] = src.read(1, masked=True).astype(dtype).filled(np.nan)
+            return self.cache[name]
+
+    def __setitem__(self, name, value):
+        self.cache[name] = value
+
+    def __delitem__(self, name):
+        self.cache.pop(name, None)
+        self.paths.pop(name, None)
+
+    def __iter__(self):
+        return iter(dict.fromkeys([*self.paths, *self.cache]))
+
+    def __len__(self):
+        return len(set(self.paths) | self.cache.keys())
+
+    def __contains__(self, name):
+        return name in self.paths or name in self.cache
 
 
 @dataclass
@@ -53,7 +97,7 @@ class TerrainGrid:
         if (folder/"thermal_observed_source_id.tif").exists():
             files["thermal_observation_source_id"] = "thermal_observed_source_id"
         arrays, geometry = cls._read_aligned({key: folder / f"{name}.tif" for key, name in files.items()})
-        arrays["scenario_temperature"] = arrays["temperature_lt12"]
+        arrays.paths["scenario_temperature"] = arrays.paths["temperature_lt12"]
         shape, affine, crs = geometry
         if shape != (manifest["height"], manifest["width"]):
             raise ValueError("Raster dimensions disagree with manifest.json")
@@ -88,21 +132,13 @@ class TerrainGrid:
 
     @staticmethod
     def _read_aligned(paths):
-        arrays = {}
-        geometry = None
-        for name, path in paths.items():
-            with rasterio.open(path) as src:
-                signature = (src.shape, src.transform, src.crs)
-                if geometry is None:
-                    geometry = signature
-                if signature != geometry or src.count != 1:
-                    raise ValueError(f"Misaligned or multiband layer: {path}")
-                arrays[name] = src.read(1, masked=True).astype("float64").filled(np.nan)
-        return arrays, geometry
+        with rasterio.open(paths["elevation"]) as src:
+            geometry = (src.shape, src.transform, src.crs)
+        return RasterLayers(paths, geometry), geometry
 
     @property
     def shape(self):
-        return self.layers["elevation"].shape
+        return self.layers.geometry[0] if isinstance(self.layers, RasterLayers) else self.layers["elevation"].shape
 
     @property
     def pixel_m(self):
@@ -110,10 +146,18 @@ class TerrainGrid:
 
     @cached_property
     def lonlat(self):
-        rows, cols = np.indices(self.shape)
-        xs, ys = xy(self.transform, rows.ravel(), cols.ravel())
-        lon, lat = project(self.crs, MARS_GEOGRAPHIC, xs, ys)
-        return np.deg2rad(np.array(lon).reshape(self.shape)), np.deg2rad(np.array(lat).reshape(self.shape))
+        # Chunk projection to avoid millions of Python coordinate objects and
+        # several full-grid temporaries alive at once. Keep float64 coordinates.
+        lon = np.empty(self.shape, dtype=np.float64)
+        lat = np.empty(self.shape, dtype=np.float64)
+        for first in range(0, self.shape[0], 32):
+            last = min(first + 32, self.shape[0])
+            rows, cols = np.indices((last - first, self.shape[1]))
+            xs, ys = xy(self.transform, (rows + first).ravel(), cols.ravel())
+            longitude, latitude = project(self.crs, MARS_GEOGRAPHIC, xs, ys)
+            lon[first:last] = np.deg2rad(np.asarray(longitude).reshape(last - first, -1))
+            lat[first:last] = np.deg2rad(np.asarray(latitude).reshape(last - first, -1))
+        return lon, lat
 
     def cell(self, position: Position) -> tuple[int, int]:
         if position.row is not None:
@@ -139,9 +183,9 @@ class TerrainGrid:
             return dict(temperature=layers["observed_temperature"], dust=None, radiation=None, sunlight=None)
         key = f"{local_time_h:02d}"
         return dict(
-            temperature=layers.get("temperature_lt" + key, layers["scenario_temperature"]),
+            temperature=layers["temperature_lt" + key] if "temperature_lt" + key in layers else layers["scenario_temperature"],
             dust=layers["dust"], radiation=layers["radiation"],
-            sunlight=layers.get("sunlight_lt" + key, layers["sunlight"]),
+            sunlight=layers["sunlight_lt" + key] if "sunlight_lt" + key in layers else layers["sunlight"],
         )
 
     @property
@@ -188,7 +232,7 @@ class TerrainGrid:
     def risk_grid(self, request: RouteRequest):
         env = self.environment(request.mode, request.local_time_h)
         params = request.parameters
-        slope = self.layers["slope"]
+        slope = self.layers["slope"].astype(np.float64, copy=False)
         valid = np.isfinite(self.layers["elevation"]) & np.isfinite(slope) & np.isfinite(env["temperature"])
         valid &= (slope >= 0) & (slope <= params.max_slope_deg)
         if request.mode == "scenario":
@@ -205,14 +249,14 @@ class TerrainGrid:
             valid &= np.isfinite(self.layers["observed_temperature"])
         components = dict(
             slope=np.clip(slope / params.max_slope_deg, 0, 1),
-            temperature=np.clip((params.cold_reference_k - env["temperature"]) / 70.0, 0, 1),
+            temperature=np.clip((params.cold_reference_k - env["temperature"].astype(np.float64, copy=False)) / 70.0, 0, 1),
         )
         if env["dust"] is not None:
-            components["dust"] = np.clip(env["dust"], 0, 1)
+            components["dust"] = np.clip(env["dust"].astype(np.float64, copy=False), 0, 1)
         if env["radiation"] is not None:
             # Normalize the uniform reference for the demo risk scale. This
             # term supplies no spatial radiation or shielding information.
-            components["radiation"] = np.clip(env["radiation"] / 0.035, 0, 1)
+            components["radiation"] = np.clip(env["radiation"].astype(np.float64, copy=False) / 0.035, 0, 1)
         weights = request.weights.model_dump()
         total = sum(weights[key] for key in components)
         if total <= 0:
@@ -223,7 +267,7 @@ class TerrainGrid:
 
     def sites(self, request: SiteRequest):
         env = self.environment(request.mode)
-        slope, ice = self.layers["slope"], self.layers["ice"]
+        slope, ice = (self.layers[name].astype(np.float64, copy=False) for name in ("slope", "ice"))
         valid = (np.isfinite(ice) & np.isfinite(slope) & np.isfinite(self.layers["elevation"]) &
                  np.isfinite(env["temperature"]) & (slope >= 0) & (slope <= request.max_slope_deg))
         if request.edge_buffer_km > 0:
@@ -233,7 +277,7 @@ class TerrainGrid:
             valid &= inner
         components = dict(ice=np.clip(ice, 0, 1), flatness=1-np.clip(slope/request.max_slope_deg, 0, 1))
         raw_weights = dict(ice=0.45, flatness=0.30, sunlight=0.15, shielding=0.10)
-        sunlight = self.layers["sunlight"] if request.mode == "scenario" else None
+        sunlight = self.layers["sunlight"].astype(np.float64, copy=False) if request.mode == "scenario" else None
         if sunlight is not None:
             valid &= np.isfinite(sunlight)
             # Relative within the region: the mean-flux layer is a 4-sample proxy.

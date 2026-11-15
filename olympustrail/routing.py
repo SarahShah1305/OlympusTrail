@@ -48,15 +48,15 @@ def edge_resources(grid, request, environment, a, b):
     distance = grid.distance_m(a, b)
     if distance <= 0:
         raise ValueError("Grid contains coincident neighboring cell centers")
-    grade = math.degrees(math.atan(abs(grid.layers["elevation"][b]-grid.layers["elevation"][a])/distance))
-    slope = max(grade, float((grid.layers["slope"][a]+grid.layers["slope"][b])/2))
+    grade = math.degrees(math.atan(abs(float(grid.layers["elevation"][b])-float(grid.layers["elevation"][a]))/distance))
+    slope = max(grade, (float(grid.layers["slope"][a])+float(grid.layers["slope"][b]))/2)
     slope_limit = min(10.0, params.max_slope_deg) if "steep" in request.avoid else params.max_slope_deg
     if slope > slope_limit:
         return None
-    dust = 0.0 if environment["dust"] is None else float((environment["dust"][a]+environment["dust"][b])/2)
+    dust = 0.0 if environment["dust"] is None else (float(environment["dust"][a])+float(environment["dust"][b]))/2
     speed = params.walking_speed_kmh / (1+slope/10.0+0.3*dust)
     hours = distance/1000.0/speed
-    temperature = float((environment["temperature"][a]+environment["temperature"][b])/2)
+    temperature = (float(environment["temperature"][a])+float(environment["temperature"][b]))/2
     power = params.base_power_w + params.cold_power_w_per_k*max(0, params.cold_reference_k-temperature)
     energy = hours*power + distance/1000.0*params.movement_energy_wh_km
     return distance, hours, energy
@@ -85,7 +85,7 @@ def route_profile(grid, request, environment, path):
             hours += dt
             energy += de
             if environment["radiation"] is not None:
-                rate = float((environment["radiation"][previous]+environment["radiation"][cell])/2)
+                rate = (float(environment["radiation"][previous])+float(environment["radiation"][cell]))/2
                 radiation += dt*rate
         result.append(dict(position=grid.position(cell), elapsed_hours=hours, distance_km=distance/1000,
                            oxygen_remaining_hours=request.oxygen_hours-hours,
@@ -257,7 +257,7 @@ def plan_route(grid: TerrainGrid, request: RouteRequest):
     temperatures = [float(environment["temperature"][cell]) for cell in mission_path]
     dust = [float(environment["dust"][cell]) for cell in mission_path] if environment["dust"] is not None else None
     traversed_slopes = [float(grid.layers["slope"][cell]) for cell in mission_path]
-    traversed_slopes += [math.degrees(math.atan(abs(grid.layers["elevation"][b]-grid.layers["elevation"][a]) /
+    traversed_slopes += [math.degrees(math.atan(abs(float(grid.layers["elevation"][b])-float(grid.layers["elevation"][a])) /
                                                grid.distance_m(a, b)))
                          for a, b in zip(mission_path, mission_path[1:])]
     abort_points = checkpoints(profile, len(outbound), request) if request.return_to_start else []
