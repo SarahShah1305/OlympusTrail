@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { presets, tripVerdict } from "../mission.js";
+import { presets, timeOfDay, tripVerdict } from "../mission.js";
 
 const duration = (value) => {
   const minutes = Math.round(value * 60);
@@ -154,7 +154,7 @@ export default function MissionPanel(props) {
           <h2 id="mission-title">Choose your gear</h2>
           <Point
             key={`start-${start?.lat}-${start?.lng}`}
-            title="A · You are here"
+            title="A, you are here"
             point={start}
             onEdit={() => onEditPoint("start")}
             onSet={(p) => onSetPoint("start", p)}
@@ -176,7 +176,7 @@ export default function MissionPanel(props) {
           ) : (
             <Point
               key={`goal-${goal?.lat}-${goal?.lng}`}
-              title="B · Destination"
+              title="B, destination"
               point={goal}
               onEdit={() => onEditPoint("goal")}
               onSet={(p) => onSetPoint("goal", p)}
@@ -197,7 +197,7 @@ export default function MissionPanel(props) {
               >
                 {preset.label}
                 <small title={`${preset.battery} Wh battery capacity`}>
-                  {preset.oxygen} hours of air ·{" "}
+                  {preset.oxygen} hours of air,{" "}
                   {id === "short"
                     ? "smaller"
                     : id === "standard"
@@ -247,11 +247,7 @@ export default function MissionPanel(props) {
               >
                 {[0, 6, 12, 18].map((h) => (
                   <option key={h} value={h}>
-                    {
-                      { 0: "Night", 6: "Morning", 12: "Midday", 18: "Evening" }[
-                        h
-                      ]
-                    }
+                    {timeOfDay(h)}
                   </option>
                 ))}
               </select>
@@ -345,7 +341,7 @@ export default function MissionPanel(props) {
                   <div>
                     <dt>Whole trip</dt>
                     <dd>
-                      {number(metrics.distance_km)} km · about{" "}
+                      {number(metrics.distance_km)} km, about{" "}
                       {duration(metrics.hours)}
                     </dd>
                   </div>

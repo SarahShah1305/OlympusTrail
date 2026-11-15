@@ -3,6 +3,12 @@ export const presets = {
   standard: { label: "Standard", oxygen: 4, battery: 1000 },
   long: { label: "Long trek", oxygen: 8, battery: 2000 },
 };
+export function timeOfDay(hour) {
+  return (
+    { 0: "Night", 6: "Morning", 12: "Midday", 18: "Evening" }[Number(hour)] ||
+    "Custom time"
+  );
+}
 export function tripVerdict(status) {
   if (status === "ok")
     return {

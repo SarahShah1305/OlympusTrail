@@ -1,30 +1,30 @@
 export const sources = [
   {
     id: "mola",
-    name: "Elevation · MOLA",
-    organization: "NASA Mars Trek · MGS MOLA/MOLA64 merged DEM",
+    name: "Elevation, MOLA",
+    organization: "NASA Mars Trek, MGS MOLA/MOLA64 merged DEM",
     url: "https://trek.nasa.gov/mars/",
     archiveUrl: "https://pds-geosciences.wustl.edu/missions/mgs/mola.html",
     note: "Orbital altimetry, resampled to the shared 3 km Arcadia grid.",
   },
   {
     id: "mola-pds",
-    name: "MOLA archive · PDS Geosciences Node",
+    name: "MOLA archive, PDS Geosciences Node",
     organization: "Mars Global Surveyor MOLA archive",
     url: "https://pds-geosciences.wustl.edu/missions/mgs/mola.html",
     note: "Archive reference for the MOLA source data used in the processed regional terrain grid.",
   },
   {
     id: "swim",
-    name: "Ice consistency · SWIM",
+    name: "Ice consistency, SWIM",
     organization: "SWIM Combined Ice Consistency Map (0–1 m)",
     url: "https://swim.psi.edu/SWIM4MIMProducts.php",
     note: "Upper-metre ice consistency indicator; not ice depth, probability, or a confirmed deposit.",
   },
   {
     id: "lmd-dust",
-    name: "Atmospheric dust · LMD climatology",
-    organization: "MCS v5.2 column dust optical depth · MY36 v2.5",
+    name: "Atmospheric dust, LMD climatology",
+    organization: "MCS v5.2 column dust optical depth, MY36 v2.5",
     url: "https://www-mars.lmd.jussieu.fr/mars/dust_climatology/",
     downloadUrl:
       "https://www-mars.lmd.jussieu.fr/mars/dust_climatology/dataset_v2/dustscenario_MY36_v2-5.nc",
@@ -49,7 +49,7 @@ export const sources = [
   },
   {
     id: "pds-tes-alternative",
-    name: "Alternative dust archive · PDS",
+    name: "Alternative dust archive, PDS",
     organization:
       "MGS TES atmospheric dust and ice bundle, DOI 10.17189/kwez-jq47",
     url: "https://doi.org/10.17189/kwez-jq47",
@@ -57,7 +57,7 @@ export const sources = [
   },
   {
     id: "themis",
-    name: "Temperature · THEMIS PBT",
+    name: "Temperature, THEMIS PBT",
     organization: "THEMIS infrared projected brightness temperature",
     url: "https://themis-data.mars.asu.edu/",
     archiveUrl: "https://pds.nasa.gov/",
@@ -65,7 +65,7 @@ export const sources = [
   },
   {
     id: "radiation-reference",
-    name: "Radiation reference · MSL RAD",
+    name: "Radiation reference, MSL RAD",
     organization:
       "Hassler et al. (2014), Science 343, DOI 10.1126/science.1244797",
     url: "https://doi.org/10.1126/science.1244797",
@@ -75,7 +75,7 @@ export const sources = [
   },
   {
     id: "radiation-ntrs",
-    name: "Radiation reference · NASA NTRS",
+    name: "Radiation reference, NASA NTRS",
     organization:
       "NASA Technical Reports Server record for Hassler et al. (2014)",
     url: "https://ntrs.nasa.gov/citations/20180007641",
@@ -91,7 +91,7 @@ export const sources = [
   },
   {
     id: "caves",
-    name: "Cave candidates · USGS/PDS",
+    name: "Cave candidates, USGS/PDS",
     organization: "Mars Global Cave Candidate Catalog",
     url: "https://astrogeology.usgs.gov/search/map/mars_global_cave_candidate_catalog_v1_cushing",
     archiveUrl: "https://pds.nasa.gov/",
@@ -99,14 +99,14 @@ export const sources = [
   },
   {
     id: "arcadia-ice-context",
-    name: "Arcadia ice context · NASA NTRS",
+    name: "Arcadia ice context, NASA NTRS",
     organization: "NASA NTRS summary of Arcadia shallow-ice evidence",
     url: "https://ntrs.nasa.gov/api/citations/20205008958/downloads/Morgan_etal_NA_Perspective_NATASTRON_19122833C%20.pdf",
     note: "Regional context for the choice of Arcadia Planitia.",
   },
   {
     id: "mars-trek-tiles",
-    name: "Map tiles · Mars Trek",
+    name: "Map tiles, Mars Trek",
     organization: "NASA Mars Trek WMTS catalog",
     url: "https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars",
     note: "Mars MOLA shaded-relief mosaic basemap.",
