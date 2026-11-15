@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import re
+import os
 
 from fastapi import FastAPI
 
@@ -13,7 +14,6 @@ ROOT = Path(__file__).resolve().parent
 
 app = FastAPI(title="OlympusTrail Mars Survival Navigator")
 
-@app.middleware("http")
 async def static_cache_headers(request, call_next):
     response = await call_next(request)
     if response.status_code == 200 and request.method in ("GET", "HEAD"):
@@ -25,6 +25,11 @@ async def static_cache_headers(request, call_next):
         elif path in ("/", "/index.html"):
             response.headers["Cache-Control"] = "no-cache"
     return response
+
+if not os.environ.get("VERCEL"):
+    # Root middleware prevents Vercel from promoting the public frontend to
+    # its CDN. Use platform headers there and retain local cache behavior here.
+    app.middleware("http")(static_cache_headers)
 
 app.include_router(planner_app.router)
 async def ask_single_app(payload: AskPayload):
