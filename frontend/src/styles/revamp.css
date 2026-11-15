@@ -581,3 +581,10 @@
     font-size: 18pt;
   }
 }
+
+@media (max-width: 780px) {
+  .revamp-header {
+    min-height: 98px;
+    padding-block: 4px;
+  }
+}

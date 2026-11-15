@@ -52,8 +52,16 @@ export default function BasePicker({
             <p>
               {sourceMode === "demo"
                 ? "Example location only; no site score or ice deposit was calculated."
-                : `Ice evidence is ${site.ice_consistency >= 0.75 ? "stronger" : site.ice_consistency >= 0.4 ? "moderate" : "lower"}. The terrain slope is ${site.slope_deg < 5 ? "gentle" : site.slope_deg < 10 ? "moderate" : "steep"}.`}
+                : `Ice evidence index: ${Number(site.ice_consistency).toFixed(2)}. Terrain slope: ${Number(site.slope_deg).toFixed(1)}°.`}
             </p>
+            {sourceMode !== "demo" &&
+              site.nearest_shelter?.distance_km != null && (
+                <p>
+                  Nearest terrain shelter candidate:{" "}
+                  {Number(site.nearest_shelter.distance_km).toFixed(1)} km
+                  (unverified).
+                </p>
+              )}
             {selectedSite?.id === site.id && (
               <button
                 type="button"
