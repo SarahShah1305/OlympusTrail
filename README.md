@@ -6,6 +6,8 @@ OlympusTrail is a NASA Space Apps hackathon demonstration for exploring a potent
 
 [Try the deployed site](https://olympus-trail.vercel.app/) · [Data sources and credits](frontend/src/sources.js) · [Planner data and methods](data/person1/README.md)
 
+For deployment setup, environment variables and troubleshooting, see [the deployment guide](docs/deployment.md).
+
 ## Run locally
 
 You need Python, Node.js and npm. From the repository root, create a Python environment and install the project dependencies:

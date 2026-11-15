@@ -106,6 +106,7 @@ export default function InfoDrawer({
             <button type="button" onClick={onChangeSource}>
               {sourceMode === "live" ? "Use sample mode" : "Use live planner"}
             </button>
+            <footer>Build SHA: {__BUILD_SHA__}</footer>
           </>
         )}
       </aside>
