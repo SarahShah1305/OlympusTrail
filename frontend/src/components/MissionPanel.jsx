@@ -322,7 +322,14 @@ export default function MissionPanel(props) {
             </p>
           )}
           {routeError === BLOCKED_START && (
-            <button type="button" className="secondary-button" disabled={routeLoading} onClick={onClearExclusionsRetry}>Clear exclusions and retry</button>
+            <button
+              type="button"
+              className="secondary-button"
+              disabled={routeLoading}
+              onClick={onClearExclusionsRetry}
+            >
+              Clear exclusions and retry
+            </button>
           )}
           {route && (
             <>

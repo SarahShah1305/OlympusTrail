@@ -70,6 +70,8 @@ def create_app(grid: TerrainGrid | None = None) -> FastAPI:
         else:
             dataset = os.environ.get("OLYMPUSTRAIL_DATASET", "arcadia_500m")
             try:
+                if dataset not in ("arcadia_500m", "regional_3km"):
+                    raise ValueError(f"Unknown dataset {dataset!r}")
                 metadata_path = ROOT / ("data/person1/arcadia_500m/manifest.json" if dataset == "arcadia_500m" else "data/processed/grid.json")
                 metadata = json.loads(metadata_path.read_text())
                 region = metadata.get("region", "Arcadia Planitia")

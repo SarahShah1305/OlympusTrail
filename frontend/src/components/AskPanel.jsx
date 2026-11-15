@@ -69,10 +69,17 @@ export default function AskPanel({
 
     try {
       const mapStart = getMapStart?.();
-      const data = await request("/ask", {
-        method: "POST",
-        body: JSON.stringify({ question: text, map_start: mapStart ? { lon: mapStart[1], lat: mapStart[0] } : null }),
-      }, AI_API_URL);
+      const data = await request(
+        "/ask",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            question: text,
+            map_start: mapStart ? { lon: mapStart[1], lat: mapStart[0] } : null,
+          }),
+        },
+        AI_API_URL,
+      );
       if (version !== requestVersion.current) return;
       setAnswer(data);
       setConnectionState(

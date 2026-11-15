@@ -21,6 +21,8 @@ Add variables in the Vercel project settings for the environments where they sho
 
 `inprocess` avoids an HTTP request back to the same deployment. Use `http` when the planner is hosted separately, and set `PLANNER_URL` to that service's origin. HTTP planner requests have a 30-second timeout. The frontend's own API requests also need to finish within the function's duration limit.
 
+The browser uses a 55-second timeout, leaving time to show its own message before the function's 60-second limit. The first sites fetch retries a transient failure once. `/health` reads metadata without loading raster arrays; it confirms liveness and dataset metadata, not a completed route calculation. `/data-status` or a real planner request performs a deeper data check. See [local validation measurements](vercel-validation.md) and the [preview-only CDN proposal](vercel-static-hosting.md).
+
 If Vercel Deployment Protection is enabled, it can block the guide's server-to-server HTTP request to a protected planner deployment. In that setup, use `inprocess` for a single deployment, or configure an authorized planner URL and the platform's supported protection bypass for server requests. Treat any bypass token as a secret; do not add it to frontend variables.
 
 After deployment, open the site and check the About drawer's **Build SHA** against the deployed Git commit. Then check `/health` for an `ok` response, try a planner action, and submit a question in Ask the Map. With `LLM_PROVIDER=none`, guide answers use the offline fallback. Confirm the result is live planner data and not marked as sample data when `USE_MOCK=0`.
