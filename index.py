@@ -3,6 +3,13 @@
 from pathlib import Path
 import re
 import os
+import ctypes
+import sys
+
+if sys.platform == "linux":
+    expat = Path(__file__).resolve().parent / "olympustrail" / "_native" / "libexpat.so.1"
+    if expat.is_file():
+        ctypes.CDLL(str(expat), mode=ctypes.RTLD_GLOBAL)
 
 from fastapi import FastAPI
 
