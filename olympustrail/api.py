@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import os
 import math
+import json
 from pathlib import Path
+from threading import RLock
 
 import numpy as np
 from fastapi import FastAPI, HTTPException, Query
@@ -22,6 +24,7 @@ def create_app(grid: TerrainGrid | None = None) -> FastAPI:
     app = FastAPI(title="OlympusTrail Person 1 API", version="0.1.0",
                   description="Regional Mars hackathon planner. Data classes and assumptions accompany every result.")
     app.state.grid = grid
+    load_lock = RLock()
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(_request, error):
@@ -42,12 +45,13 @@ def create_app(grid: TerrainGrid | None = None) -> FastAPI:
                        allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
 
     def terrain():
-        if app.state.grid is None:
-            try:
-                app.state.grid = TerrainGrid.load(ROOT)
-            except (OSError, ValueError, KeyError) as error:
-                raise HTTPException(status_code=503, detail="Terrain data not ready: " + str(error)) from error
-        return app.state.grid
+        with load_lock:
+            if app.state.grid is None:
+                try:
+                    app.state.grid = TerrainGrid.load(ROOT)
+                except (OSError, ValueError, KeyError) as error:
+                    raise HTTPException(status_code=503, detail="Terrain data not ready: " + str(error)) from error
+            return app.state.grid
 
     def calculate(request):
         try:
@@ -57,11 +61,25 @@ def create_app(grid: TerrainGrid | None = None) -> FastAPI:
 
     @app.get("/health")
     def health():
-        current = terrain()
-        return dict(status="ok", region=current.metadata.get("region", "Arcadia Planitia"),
-                    dataset=current.metadata.get("dataset"), grid_shape=list(current.shape),
-                    grid_spacing_m=current.pixel_m,
-                    scenario="mcd62_ls90" if current.metadata.get("dataset") == "arcadia_500m" else "mcd62_ls90_noon",
+        # Liveness/metadata only: loading every raster is a deep check, not a
+        # prerequisite for a health probe or the first HTML request.
+        current = app.state.grid
+        if current is not None:
+            dataset = current.metadata.get("dataset")
+            region, shape, spacing = current.metadata.get("region", "Arcadia Planitia"), list(current.shape), current.pixel_m
+        else:
+            dataset = os.environ.get("OLYMPUSTRAIL_DATASET", "arcadia_500m")
+            try:
+                metadata_path = ROOT / ("data/person1/arcadia_500m/manifest.json" if dataset == "arcadia_500m" else "data/processed/grid.json")
+                metadata = json.loads(metadata_path.read_text())
+                region = metadata.get("region", "Arcadia Planitia")
+                shape = [metadata["height"], metadata["width"]]
+                spacing = abs(metadata["transform"][0]) if "transform" in metadata else metadata["pixel_size_m"]
+            except (OSError, ValueError, KeyError) as error:
+                raise HTTPException(status_code=503, detail="Terrain metadata not ready: " + str(error)) from error
+        return dict(status="ok", region=region, dataset=dataset, grid_shape=shape,
+                    grid_spacing_m=spacing,
+                    scenario="mcd62_ls90" if dataset == "arcadia_500m" else "mcd62_ls90_noon",
                     mission_parameters_validated=False)
 
     @app.get("/data-status")
@@ -151,6 +169,9 @@ def create_app(grid: TerrainGrid | None = None) -> FastAPI:
                     crs=current.crs.to_string(), transform=list(current.transform)[:6],
                     risk_weights=weights, data=current.disclosure(mode, local_time_h))
 
+    # Single-function deployments reuse these exact endpoint calculations.
+    app.state.calculate = calculate
+    app.state.terrain = terrain
     return app
 
 

@@ -2,10 +2,13 @@
 
 import json
 import os
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Dict, Mapping
 
 import httpx
+from anyio import to_thread
 from dotenv import load_dotenv
 
 
@@ -16,6 +19,59 @@ class PlannerError(Exception):
 _GUIDE_DIR = Path(__file__).resolve().parent
 load_dotenv(_GUIDE_DIR / ".env")
 _CONNECTION_ERROR_MESSAGE = "I could not reach the route planner. Please check that it is running."
+_SINGLE_APP = ContextVar("single_app_planner", default=None)
+_BLOCKED_START = "Start is blocked by missing data, slope limit, or an avoid constraint"
+_BLOCKED_MESSAGE = "Your starting point is inside an area excluded by your filters. Try another base, move A, or remove a filter."
+
+
+@contextmanager
+def inprocess_planner(app):
+    """Select the co-mounted planner for this request, without global env mutation."""
+    token = _SINGLE_APP.set(app)
+    try:
+        yield
+    finally:
+        _SINGLE_APP.reset(token)
+
+
+def _inprocess_app():
+    mode = os.getenv("PLANNER_MODE", "inprocess" if _SINGLE_APP.get() is not None else "http").strip().lower()
+    if mode == "http":
+        return None
+    if mode != "inprocess":
+        raise PlannerError("PLANNER_MODE must be http or inprocess.")
+    app = _SINGLE_APP.get()
+    if app is None:
+        from olympustrail.api import app
+    return app
+
+
+def _status_error(status, detail=None):
+    if status == 422:
+        return PlannerError(_BLOCKED_MESSAGE if detail == _BLOCKED_START else "The route request was rejected. Check the start position and constraints.")
+    if status == 503:
+        return PlannerError("The planner's terrain data is temporarily unavailable.")
+    return PlannerError(f"The planner returned an unexpected HTTP {status} response.")
+
+
+async def _local_call(app, request=None):
+    """Run synchronous planner work off the guide event loop."""
+    from fastapi import HTTPException
+    from pydantic import ValidationError
+    from olympustrail.models import RouteRequest, SiteRequest
+
+    def calculate():
+        try:
+            result = (app.state.terrain().sites(SiteRequest()) if request is None
+                      else app.state.calculate(RouteRequest(**request)))
+            return dict(result, _mock=False)
+        except ValidationError as exc:
+            raise _status_error(422) from exc
+        except HTTPException as exc:
+            raise _status_error(exc.status_code, exc.detail) from exc
+        except Exception as exc:
+            raise _status_error(500) from exc
+    return await to_thread.run_sync(calculate)
 _ALLOWED_FIELDS = {
     "start", "goal_type", "oxygen_hours", "battery_wh", "reserve_fraction",
     "return_to_start", "local_time_h", "mode", "min_goal_distance_km", "avoid",
@@ -122,7 +178,7 @@ def _planner_url() -> str:
         return configured.rstrip("/")
     # In a single-origin Vercel deployment the guide calls the planner through
     # the current deployment URL. Local development keeps the localhost default.
-    vercel_url = os.getenv("VERCEL_URL")
+    vercel_url = os.getenv("VERCEL_PROJECT_PRODUCTION_URL") or os.getenv("VERCEL_URL")
     if vercel_url:
         return f"https://{vercel_url}".rstrip("/")
     return "http://localhost:8000"
@@ -133,18 +189,22 @@ async def call_planner(request: dict) -> dict:
     if _use_mock():
         return _mock_route(request)
 
+    app = _inprocess_app()
+    if app is not None:
+        return await _local_call(app, request)
+
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(f"{_planner_url()}/route", json=request)
     except (httpx.TimeoutException, httpx.ConnectError) as exc:
         raise PlannerError(_CONNECTION_ERROR_MESSAGE) from exc
 
-    if response.status_code == 422:
-        raise PlannerError("The route request was rejected. Check the start position and constraints.")
-    if response.status_code == 503:
-        raise PlannerError("The planner's terrain data is temporarily unavailable.")
     if response.status_code < 200 or response.status_code >= 300:
-        raise PlannerError(f"The planner returned an unexpected HTTP {response.status_code} response.")
+        try:
+            detail = response.json().get("detail")
+        except (ValueError, AttributeError):
+            detail = None
+        raise _status_error(response.status_code, detail)
     try:
         result = response.json()
     except ValueError as exc:
@@ -183,8 +243,11 @@ async def get_sites() -> dict:
     """Fetch candidate sites, using built-in mock data only in mock mode."""
     if _use_mock():
         return _mock_sites()
+    app = _inprocess_app()
+    if app is not None:
+        return await _local_call(app)
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(f"{_planner_url()}/sites")
         response.raise_for_status()
         result = response.json()
