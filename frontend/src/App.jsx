@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getSites, planRoute } from "./api/client";
 import { normalizeRoute } from "./api/contract";
 import { getBriefingMetrics } from "./briefing";
+import { timeOfDay } from "./mission";
 import { layerDefinitions } from "./config";
 import MapView from "./components/MapView";
 import MissionPanel from "./components/MissionPanel";
@@ -240,13 +241,9 @@ export default function App() {
           onUseSite={chooseSite}
           sourceMode={sourceMode}
           editPoint={editPoint}
+          mapNotice={mapNotice}
+          onDismissNotice={() => setMapNotice("")}
         />
-        {mapNotice && (
-          <div className="map-toast" role="status">
-            {mapNotice}
-            <button onClick={() => setMapNotice("")}>Dismiss</button>
-          </div>
-        )}
         <aside
           className={`mission-sheet ${sheetOpen ? "" : "sheet-collapsed"}`}
           aria-label="Mission planner"
@@ -327,14 +324,11 @@ export default function App() {
           </h2>
           <p>
             Starting point:{" "}
-            {Number.isFinite(start?.lat)
-              ? `${start.lat.toFixed(3)}°N`
-              : "Not set"}
-            .{" "}
-            {Number.isFinite(start?.lng)
-              ? `${Math.abs(start.lng).toFixed(3)}°W`
-              : ""}{" "}
-            Local scenario time: {localTimeH}:00.
+            {Number.isFinite(start?.lat) && Number.isFinite(start?.lng)
+              ? `${start.lat.toFixed(3)}° N, ${Math.abs(start.lng).toFixed(3)}° W.`
+              : "Not set."}{" "}
+            Local scenario time: {timeOfDay(localTimeH)} (
+            {String(localTimeH).padStart(2, "0")}:00).
           </p>
           {getBriefingMetrics(route.metrics).length > 0 && (
             <ul>

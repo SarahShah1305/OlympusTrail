@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CircleMarker,
   ImageOverlay,
@@ -32,6 +32,7 @@ marsCrs.distance = (a, b) => {
   );
 };
 const bounds = config.region.bounds;
+const EMPTY_PATH = [];
 const viewBounds = [
   [bounds[0][0] - 4, bounds[0][1] - 4],
   [bounds[1][0] + 4, bounds[1][1] + 4],
@@ -54,6 +55,10 @@ function MapEvents({ enabled, onMapClick, onOutside }) {
 }
 function FitArea({ site, path }) {
   const map = useMap();
+  const siteId = site?.id;
+  const siteLat = site?.lat;
+  const siteLng = site?.lng;
+  const pathKey = path.map((point) => point.join(",")).join(";");
   useEffect(() => {
     let initial = true;
     const update = () => {
@@ -81,13 +86,37 @@ function FitArea({ site, path }) {
   }, [map]);
   useEffect(() => {
     if (!map.getSize().x || !map.getSize().y) return;
-    if (path?.length > 1)
-      map.fitBounds(path, { padding: [36, 36], animate: false });
-    else if (site)
-      map.setView([site.lat, site.lng], Math.max(map.getZoom(), 6), {
+    const stablePath = pathKey
+      ? pathKey.split(";").map((point) => point.split(",").map(Number))
+      : EMPTY_PATH;
+    if (stablePath.length > 1)
+      map.fitBounds(stablePath, { padding: [36, 36], animate: false });
+    else if (Number.isFinite(siteLat) && Number.isFinite(siteLng))
+      map.setView([siteLat, siteLng], Math.max(map.getZoom(), 6), {
         animate: false,
       });
-  }, [map, path, site]);
+  }, [map, pathKey, siteId, siteLat, siteLng]);
+  return null;
+}
+function PanToStart({ start, route, selectedSite }) {
+  const map = useMap();
+  const lat = start?.lat,
+    lng = start?.lng;
+  const context = useRef({ route, selectedSite });
+  useEffect(() => {
+    context.current = { route, selectedSite };
+  }, [route, selectedSite]);
+  useEffect(() => {
+    const { route: currentRoute, selectedSite: site } = context.current;
+    if (
+      lat == null ||
+      lng == null ||
+      currentRoute ||
+      (site && site.lat === lat && site.lng === lng)
+    )
+      return;
+    map.panTo([lat, lng], { animate: false });
+  }, [map, lat, lng]);
   return null;
 }
 function icon(label, kind, selected) {
@@ -119,7 +148,7 @@ function Endpoint({ point, label, onDrag, draggable = true }) {
     >
       <Popup>
         {title}
-        {draggable ? " · drag to adjust" : ""}
+        {draggable ? ", drag to adjust" : ""}
       </Popup>
     </Marker>
   );
@@ -157,6 +186,9 @@ function LayerControls({
   opacity,
   onOpacityChange,
 }) {
+  const [optionsOpen, setOptionsOpen] = useState(
+    () => !window.matchMedia("(max-width: 780px)").matches,
+  );
   const activeId = Object.keys(activeLayers).find((id) => activeLayers[id]);
   const activeLayer = layers.find((layer) => layer.id === activeId);
   const quickLayers = [
@@ -190,7 +222,10 @@ function LayerControls({
                 key={layer.id}
                 type="button"
                 aria-pressed={activeId === layer.id}
-                onClick={() => onSelectLayer(layer.id)}
+                onClick={(event) => {
+                  onSelectLayer(layer.id);
+                  event.currentTarget.closest("details").open = false;
+                }}
               >
                 {layer.label}
               </button>
@@ -198,65 +233,72 @@ function LayerControls({
           </div>
         </details>
       </div>
-      <label className="trail-opacity">
-        Overlay opacity{" "}
-        <input
-          type="range"
-          min="20"
-          max="100"
-          value={opacity * 100}
-          onChange={(event) =>
-            onOpacityChange(Number(event.target.value) / 100)
-          }
-        />
-      </label>
-      <div className="active-layer-key" aria-live="polite">
-        {activeLayer ? (
-          <>
-            <strong>{activeLayer.label}</strong>
-            {activeLayer.legend_colors?.length > 0 && (
-              <div
-                className="trail-ramp"
-                style={{
-                  background: `linear-gradient(90deg, ${activeLayer.legend_colors.join(", ")})`,
-                }}
-              />
-            )}
-            {activeLayer.id === "ice" ? (
-              <>
-                <div className="ice-scale">
-                  <span>Low</span>
-                  <span>Medium</span>
-                  <span>High</span>
-                </div>
+      <details
+        className="trail-layer-options"
+        open={optionsOpen}
+        onToggle={(event) => setOptionsOpen(event.currentTarget.open)}
+      >
+        <summary>Layer options</summary>
+        <label className="trail-opacity">
+          Overlay opacity{" "}
+          <input
+            type="range"
+            min="20"
+            max="100"
+            value={opacity * 100}
+            onChange={(event) =>
+              onOpacityChange(Number(event.target.value) / 100)
+            }
+          />
+        </label>
+        <div className="active-layer-key" aria-live="polite">
+          {activeLayer ? (
+            <>
+              <strong>{activeLayer.label}</strong>
+              {activeLayer.legend_colors?.length > 0 && (
+                <div
+                  className="trail-ramp"
+                  style={{
+                    background: `linear-gradient(90deg, ${activeLayer.legend_colors.join(", ")})`,
+                  }}
+                />
+              )}
+              {activeLayer.id === "ice" ? (
+                <>
+                  <div className="ice-scale">
+                    <span>Low</span>
+                    <span>Medium</span>
+                    <span>High</span>
+                  </div>
+                  <p>
+                    Evidence only, not a confirmed deposit. Regional data;
+                    native cells are about 3 km across.
+                  </p>
+                </>
+              ) : activeLayer.id === "aspect" ? (
                 <p>
-                  Evidence only, not a confirmed deposit. Regional data; native
-                  cells are about 3 km across.
+                  {activeLayer.description} 0° is north; values increase
+                  clockwise.
                 </p>
-              </>
-            ) : activeLayer.id === "aspect" ? (
-              <p>
-                {activeLayer.description} 0° is north; values increase
-                clockwise.
-              </p>
-            ) : (
-              <>
-                <div className="ramp-labels">
-                  <span>
-                    Low: {activeLayer.min} {activeLayer.units}
-                  </span>
-                  <span>
-                    High: {activeLayer.max} {activeLayer.units}
-                  </span>
-                </div>
-                <p>{activeLayer.description}</p>
-              </>
-            )}
-          </>
-        ) : (
-          <span>NASA MOLA colour-shaded elevation</span>
-        )}
-      </div>
+              ) : (
+                <>
+                  <div className="ramp-labels">
+                    <span>
+                      Low: {activeLayer.min} {activeLayer.units}
+                    </span>
+                    <span>
+                      High: {activeLayer.max} {activeLayer.units}
+                    </span>
+                  </div>
+                  <p>{activeLayer.description}</p>
+                </>
+              )}
+            </>
+          ) : (
+            <span>NASA MOLA colour-shaded elevation</span>
+          )}
+        </div>
+      </details>
     </div>
   );
 }
@@ -281,12 +323,30 @@ export default function MapView({
   overlayOpacity,
   onOpacityChange,
   allowMapClick,
+  mapNotice,
+  onDismissNotice,
 }) {
   const [tileError, setTileError] = useState(false);
+  const tileFailures = useRef(0);
+  useEffect(() => {
+    if (!tileError) return;
+    const timer = window.setTimeout(() => setTileError(false), 4000);
+    return () => window.clearTimeout(timer);
+  }, [tileError]);
   const [imageError, setImageError] = useState("");
   const [outside, setOutside] = useState(false);
+  useEffect(() => {
+    if (!mapNotice) return;
+    const timer = window.setTimeout(() => onDismissNotice?.(), 4000);
+    return () => window.clearTimeout(timer);
+  }, [mapNotice, onDismissNotice]);
+  useEffect(() => {
+    if (!imageError) return;
+    const timer = window.setTimeout(() => setImageError(""), 4000);
+    return () => window.clearTimeout(timer);
+  }, [imageError]);
   const layerList = layerMetadata?.layers || [];
-  const path = route?.path || [];
+  const path = route?.path || EMPTY_PATH;
   const outbound = route?.route?.outbound?.map(pos) || path;
   const returnPath = route?.route?.return_path?.map(pos) || [];
   const destination = route?.route?.destination
@@ -345,14 +405,23 @@ export default function MapView({
           className="leaflet-map"
         >
           <FitArea site={selectedSite} path={askRoutePath || path} />
+          <PanToStart start={start} route={route} selectedSite={selectedSite} />
           <TileLayer
             className="trail-basemap"
             url={config.map.tileUrl}
             maxNativeZoom={6}
             attribution={config.map.attribution}
             eventHandlers={{
-              tileerror: () => setTileError(true),
-              tileload: () => setTileError(false),
+              tileerror: () => {
+                tileFailures.current += 1;
+                if (tileFailures.current >= 3) {
+                  tileFailures.current = 0;
+                  setTileError(true);
+                }
+              },
+              tileload: () => {
+                tileFailures.current = 0;
+              },
             }}
           />
           {layerList
@@ -403,12 +472,12 @@ export default function MapView({
                 position={[site.lat, site.lng]}
                 icon={icon(site.rank, "site", selectedSite?.id === site.id)}
                 opacity={selectedSite && selectedSite.id !== site.id ? 0.55 : 1}
-                title={`Site ${site.rank}: ${site.name}`}
+                title={`Candidate base ${site.rank}`}
                 eventHandlers={{ click: () => onSelectSite?.(site) }}
               >
                 <Popup>
                   <div className="site-popup">
-                    <strong>{site.name}</strong>
+                    <strong>Candidate base {site.rank}</strong>
                     <p>
                       {sourceMode === "demo"
                         ? "Example location"
@@ -429,17 +498,19 @@ export default function MapView({
             <>
               <Polyline
                 key={`casing-${pathKey}`}
+                interactive={false}
                 positions={outbound}
                 pathOptions={{ color: "#142322", weight: 12, opacity: 0.96 }}
               />
               <Polyline
                 key={`route-${pathKey}`}
+                className="trail-route"
+                interactive={false}
                 positions={outbound}
                 pathOptions={{
                   color: "#fff",
                   weight: 6,
                   opacity: 1,
-                  className: "trail-route",
                 }}
               />
             </>
@@ -458,6 +529,7 @@ export default function MapView({
           )}
           {returnPath.length > 1 && (
             <Polyline
+              interactive={false}
               positions={returnPath}
               pathOptions={{ color: "#d78154", weight: 3, dashArray: "5 9" }}
             />
@@ -504,29 +576,47 @@ export default function MapView({
         />
         {mode === "route" && (
           <div className="map-hint" role="status">
-            {editPoint === "goal"
-              ? "Click to set destination B"
-              : "Click anywhere to place A"}
+            {editPoint === "goal" ? (
+              <>
+                <span className="pointer-click">Click</span>
+                <span className="pointer-tap">Tap</span> to set destination B
+              </>
+            ) : (
+              <>
+                <span className="pointer-click">Click</span>
+                <span className="pointer-tap">Tap</span> anywhere to place A
+              </>
+            )}
           </div>
         )}
-        {outside && (
-          <div className="trail-map-notice" role="status">
-            That spot is outside the area we can plan routes for.
-          </div>
-        )}
-        {tileError && (
-          <div className="trail-map-notice" role="status">
-            Some NASA basemap tiles could not load.
-          </div>
-        )}
-        {imageError && (
-          <div className="map-data-error" role="alert">
-            {imageError} overlay is unavailable.
-            <button type="button" onClick={() => setImageError("")}>
-              Dismiss
-            </button>
-          </div>
-        )}
+        <div className="map-notices" aria-live="polite">
+          {outside && (
+            <div className="trail-map-notice">
+              That spot is outside the area we can plan routes for.
+            </div>
+          )}
+          {tileError && (
+            <div className="trail-map-notice">
+              Some NASA basemap tiles could not load.
+            </div>
+          )}
+          {imageError && (
+            <div className="trail-map-notice">
+              {imageError} overlay is unavailable.{" "}
+              <button type="button" onClick={() => setImageError("")}>
+                Dismiss
+              </button>
+            </div>
+          )}
+          {mapNotice && (
+            <div className="trail-map-notice">
+              {mapNotice}{" "}
+              <button type="button" onClick={onDismissNotice}>
+                Dismiss
+              </button>
+            </div>
+          )}
+        </div>
         <Legend />
       </div>
     </section>
